@@ -1,0 +1,12 @@
+
+[Darkroot Depths]
+desc: A dark and untamed forest with hostile, yet weak, wildlife. The basin at its end is said to hold a great danger.
+unlocked: true
+
+[Oolacile Township]
+desc: A decrepit town that has been afflicted by the spread of the Abyss. Its denizens roam without their minds, acting as a potential threat if not dispatched quickly.
+unlocked: false
+
+[Chasm of the Abyss]
+desc: The source of Oolacile's blight. A deep and dark chasm that has an unknown source. Can an individual even survive in such a place? There's one way to find out.
+unlocked: false

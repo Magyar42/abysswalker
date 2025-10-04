@@ -20,15 +20,18 @@ string titleDisplay[6] = {
 "        \\/    \\/\\/         \\/     \\/               \\/          \\/    \\/       "
 };
 
-string setArea = "Deeproot Depths";
+string setArea = "Darkroot Depths";
 string setKeepsake = "None";
-string setOldSoul = "None";
+string setOldSoul = "Soul of the Wolf Knight";
 bool gameStarted = false;
 
 map<int, map<string, string>> saveSlots;
 map<string, map<string, string>> keepsakesList;
+map<string, map<string, string>> oldSoulsList;
+map<string, map<string, string>> regionsList;
+
 vector<vector<string>>  qPressInfo = {
-    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" },
+    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start!", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" },
     { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.", "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.", "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.", "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.", "Select this option to begin the game! Make sure you have chosen your starting gear well.", "Begin with +3 HP.", "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.", "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.", "Unknown." }
 };
 
@@ -88,7 +91,7 @@ void qPressCheck(string currentSelection)
     }
 }
 
-string displayList(string listType)
+string displayList(string listInfo, string fileName, map<string, map<string, string>> listName)
 {
     int selectionIndex = 0;
     bool endDisplayList = false;
@@ -97,7 +100,7 @@ string displayList(string listType)
     while (true) {
         displayTitle();
         for (int i = 0; i < qPressInfo[0].size(); ++i) {
-            if (qPressInfo[0][i] == listType) {
+            if (qPressInfo[0][i] == listInfo) {
                 cout << qPressInfo[1][i] << "\n";
             }
         }
@@ -108,9 +111,9 @@ string displayList(string listType)
         vector<string> displayList = {};
         vector<string> fullList = {};
 
-        // Loop through each item in keepsakes.json, fill out the dictionary with keys and values
-        ifstream keepsakesFile("keepsakes.json");
-        while (getline(keepsakesFile, currentLine)) {
+        // Loop through each item in .json, fill out the dictionary with keys and values
+        ifstream itemFile(fileName);
+        while (getline(itemFile, currentLine)) {
             if (currentLine.empty()) continue;
 
             if (currentLine.find("[") != string::npos) {
@@ -123,18 +126,22 @@ string displayList(string listType)
                 size_t colonPosition = currentLine.find(":");
                 string key = currentLine.substr(0, colonPosition);
                 string value = currentLine.substr(colonPosition + 2);
-                keepsakesList[currentItem][key] = value;
+                listName[currentItem][key] = value;
             }
 
         }
-        keepsakesFile.close();
+        itemFile.close();
 
+        int unknownItemCounter = 1;
         // Loop through updated dictionary, display all unlocked items
         for (string item : fullList) {
-            if (keepsakesList[item]["unlocked"] == "true") { displayList.push_back(item); }
-            else { displayList.push_back("???"); }
+            if (listName[item]["unlocked"] == "true") { displayList.push_back(item); }
+            else {
+                displayList.push_back(colourText("Undiscovered #" + to_string(unknownItemCounter), RED));
+                ++unknownItemCounter;
+            }
         }
-        displayList.push_back("None");
+        if (listInfo != "Change Region") { displayList.push_back("None"); }
 
         string selectionValue = displayList[selectionIndex];
         for (string selectionItem : displayList) {
@@ -158,7 +165,7 @@ string displayList(string listType)
                 break;
             }
             else if (qCheck == 'e') {
-                if (displayList[selectionIndex] != "???") {
+                if (displayList[selectionIndex].find("Undiscovered")==string::npos) {
                     selectedItem = displayList[selectionIndex];
                     endDisplayList = true;
                     clearScreen();
@@ -170,6 +177,15 @@ string displayList(string listType)
             break;
         }
     }
+    return selectedItem;
+}
+
+string displayListSetup(string listType)
+{
+    string selectedItem = "";
+    if (listType == "Change Keepsake") { selectedItem = displayList(listType, "keepsakes.json", keepsakesList); }
+    else if (listType == "Change Old Soul") { selectedItem = displayList(listType, "oldsouls.json", oldSoulsList); }
+    else if (listType == "Change Region") { selectedItem = displayList(listType, "regions.json", regionsList); }
     return selectedItem;
 }
 
@@ -280,7 +296,7 @@ void displayGamePreparations()
             }
             else if (qCheck == 'e') {
                 clearScreen();
-                newlySelectedItem = displayList(selectionValue);
+                newlySelectedItem = displayListSetup(selectionValue);
                 if (selectionValue == "Change Keepsake") { setKeepsake = newlySelectedItem; }
                 else if (selectionValue == "Change Old Soul") { setOldSoul = newlySelectedItem; }
                 else if (selectionValue == "Change Region") { setArea = newlySelectedItem; }

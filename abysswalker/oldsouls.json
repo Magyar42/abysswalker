@@ -1,0 +1,25 @@
+
+[Soul of the Wolf Knight]
+desc: You are Sir Artorias, one of Lord Gwyn's Four Great Knights. Your ability with a greatsword is unmatched.
+item_type: soul
+unlocked: true
+
+[Soul of the Dragonslayer]
+desc: Dragonslayer Ornstein was captain of the Four Great Knights, leading the war against the dragons alongside Lord Gwyn's exiled firstborn.
+item_type: soul
+unlocked: false
+
+[Soul of the Chaos Flame]
+desc: The Witch of Izalith inherited the Soul of Life, and her daughters bear her legacy. Pyromancy comes naturally from Chaos.
+item_type: soul
+unlocked: false
+
+[Soul of the Paledrake]
+desc: Seath the Scaleless was born lacking the stone scales of his brethren. Turning to forbidden sorceries for a solution, he descended into madness.
+item_type: soul
+unlocked: false
+
+[Soul of the Darkmoon]
+desc: Gwyndolin was the third child of Lord Gwyn. Hidden from public view, he lead the Blades of the Darkmoon to dispense justice across Lordran.
+item_type: soul
+unlocked: false
