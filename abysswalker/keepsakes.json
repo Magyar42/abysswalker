@@ -1,0 +1,24 @@
+
+[Life Ring]
+desc: +3 HP
+uses: -1
+item_type: passive
+unlocked: true
+
+[Fire Gem]
+desc: Use at Blacksmith to improve weapon
+uses: -1
+item_type: special
+unlocked: true
+
+[Black Firebombs]
+desc: Every other turn, strike again with 3 damage
+uses: 3
+item_type: active
+unlocked: true
+
+[Test Item]
+desc: Unknown efect
+uses: -1
+item_type: passive
+unlocked: false
