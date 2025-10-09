@@ -23,6 +23,7 @@ string titleDisplay[6] = {
 string setArea = "Darkroot Depths";
 string setKeepsake = "None";
 string setOldSoul = "Soul of the Wolf Knight";
+int currentAreaDay = 1;
 bool gameStarted = false;
 
 map<int, map<string, string>> saveSlots;
@@ -31,9 +32,15 @@ map<string, map<string, string>> oldSoulsList;
 map<string, map<string, string>> regionsList;
 
 vector<vector<string>>  qPressInfo = {
-    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start!", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" },
+    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" },
     { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.", "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.", "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.", "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.", "Select this option to begin the game! Make sure you have chosen your starting gear well.", "Begin with +3 HP.", "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.", "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.", "Unknown." }
 };
+int playerHP = 10;
+int playerATK = 1;
+int playerDEF = 0;
+int playerSPD = 0;
+string playerWeapon = "None";
+vector<string> playerInventory = { "", "", "" };
 
 const string RED = "\033[0;31m";
 const string GREEN = "\033[0;32m";
@@ -199,14 +206,12 @@ bool checkForSave()
     int currentSlot = -1;
     int saveSlotArray[3] = { 0, 0, 0 };
 
-    // Find savefile.json (if possible), create the file if not present
     ifstream saveFile("savefile.json");
     if (!saveFile.is_open()) {
         cout << "No save found. Creating new file.\n";
         return false;
     }
 
-    // Read through the file
     while (getline(saveFile, currentLine)) {
         //cout << currentLine + "\n";
         if (currentLine.empty()) continue;
@@ -306,10 +311,51 @@ void displayGamePreparations()
     }
 }
 
+string setBoss(string area)
+{
+    string currentBoss = "";
+    if (area == "Darkroot Depths"){
+        switch (currentAreaDay) {
+            case 1:
+                currentBoss == "Titanite Demon";
+                break;
+            case 2:
+                currentBoss == "Moonlight Butterfly";
+                break;
+            case 3:
+                currentBoss == "Hydra of the Basin";
+                break;
+        }
+    }
+    return currentBoss;
+}
+
+void setupPlayer()
+{
+    if (setOldSoul == "Soul of the Wolf Knight") {
+        playerHP = 10;
+        playerATK = 4;
+        playerDEF = 5;
+        playerSPD = 1;
+        playerWeapon = "Greatsword";
+    }
+    // todo: add keepsake items
+}
+
+void generateWorld()
+{
+    string currentBoss = "";
+    currentBoss = setBoss(setArea);
+    setupPlayer();
+
+}
+
 // Game Loop
 int main()
 {
     checkForSave();
 
     displayGamePreparations();
+
+    generateWorld();
 }
