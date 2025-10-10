@@ -1,4 +1,4 @@
-// abysswalker.cpp : This file contains the 'main' function. Program execution begins and ends there.
+﻿// abysswalker.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <conio.h>
@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <tuple>
 using namespace std;
 
 // Global Variables
@@ -24,6 +25,8 @@ string setArea = "Darkroot Depths";
 string setKeepsake = "None";
 string setOldSoul = "Soul of the Wolf Knight";
 int currentAreaDay = 1;
+string currentAreaDayOrNight = "Day";
+string currentAreaTime = "9:00";
 bool gameStarted = false;
 
 map<int, map<string, string>> saveSlots;
@@ -35,12 +38,13 @@ vector<vector<string>>  qPressInfo = {
     { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" },
     { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.", "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.", "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.", "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.", "Select this option to begin the game! Make sure you have chosen your starting gear well.", "Begin with +3 HP.", "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.", "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.", "Unknown." }
 };
+int playerCoords[2] = { 4, 4 };
 int playerHP = 10;
 int playerATK = 1;
 int playerDEF = 0;
 int playerSPD = 0;
 string playerWeapon = "None";
-vector<string> playerInventory = { "", "", "" };
+vector<string> playerInventory = { "" };
 
 const string RED = "\033[0;31m";
 const string GREEN = "\033[0;32m";
@@ -305,25 +309,27 @@ void displayGamePreparations()
                 if (selectionValue == "Change Keepsake") { setKeepsake = newlySelectedItem; }
                 else if (selectionValue == "Change Old Soul") { setOldSoul = newlySelectedItem; }
                 else if (selectionValue == "Change Region") { setArea = newlySelectedItem; }
+                else if (selectionValue == "Start")  { gameStarted = true; }
                 break;
             }
         }
+        if (gameStarted) { break; }
     }
 }
 
-string setBoss(string area)
+string selectBoss(string area, int day)
 {
     string currentBoss = "";
     if (area == "Darkroot Depths"){
-        switch (currentAreaDay) {
+        switch (day) {
             case 1:
-                currentBoss == "Titanite Demon";
+                currentBoss = "Titanite Demon";
                 break;
             case 2:
-                currentBoss == "Moonlight Butterfly";
+                currentBoss = "Moonlight Butterfly";
                 break;
             case 3:
-                currentBoss == "Hydra of the Basin";
+                currentBoss = "Hydra of the Basin";
                 break;
         }
     }
@@ -339,14 +345,82 @@ void setupPlayer()
         playerSPD = 1;
         playerWeapon = "Greatsword";
     }
-    // todo: add keepsake items
+    
+    playerInventory.at(0) = setKeepsake;
+}
+
+void displayMap()
+{
+    cout << "\nTest.\n";
+    tuple<int, int> mapSize;
+    vector<vector<string>> map = {
+        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
+        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
+        { "N", "N", "N", "N", "O", "O", "O", "O", "O", "O", },
+        { "N", "O", "N", "N", "O", "N", "O", "N", "O", "N", },
+        { "N", "O", "O", "O", "O", "N", "O", "N", "O", "N", },
+        { "N", "N", "N", "O", "N", "N", "O", "N", "O", "O", },
+        { "N", "N", "N", "O", "N", "N", "N", "N", "O", "N", },
+        { "N", "O", "N", "O", "N", "N", "O", "O", "O", "N", },
+        { "N", "O", "O", "O", "N", "N", "N", "N", "N", "N", },
+        { "N", "O", "N", "N", "N", "N", "N", "N", "N", "N", },
+    };
+    mapSize = make_tuple(map[0].size(), map.size());
+    map[playerCoords[0]][playerCoords[1]] = colourText("@", BLUE);
+
+    for (const auto& row: map) {
+        cout << " ";
+        for (const auto& tile : row) {
+            cout << tile;
+        }
+        cout << endl;
+    }
+
+    // return mapSize; // todo: make sure returns. add check to make sure player can only move within boundaries
+}
+
+void playerMovementUpdate(char input)
+{
+    if (input == 'w') { --playerCoords[0]; }
+    else if (input == 's') { ++playerCoords[0]; }
+    else if (input == 'a') { --playerCoords[1]; }
+    else if (input == 'd') { ++playerCoords[1]; }
 }
 
 void generateWorld()
 {
     string currentBoss = "";
-    currentBoss = setBoss(setArea);
+    currentBoss = selectBoss(setArea, currentAreaDay);
     setupPlayer();
+
+    bool mapSelected = true;
+    while (true) {
+        displayTitle();
+        string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
+        cout << colourText(" Next Boss: ", BLUE) << currentBoss << " [Q]\n";
+        cout << colourText(" Current Time: ", BLUE) << dayInfo << "\n";
+        displayMap();
+        cout << textSeparator;
+
+        while (true) {
+            char input = _getch();
+            if (mapSelected) {
+                if (input == 'q') {
+                    qPressCheck(currentBoss); // todo
+                }
+                else if (input == 'w' || input == 'a' || input == 's' || input == 'd') {
+                    playerMovementUpdate(input);
+                    clearScreen();
+                    break;
+                }
+                else if (input == 'e') {
+                    clearScreen();
+                    mapSelected = false;
+                    break;
+                }
+            }
+        }
+    }
 
 }
 
