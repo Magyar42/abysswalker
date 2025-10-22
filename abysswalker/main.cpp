@@ -52,6 +52,19 @@ const string YELLOW = "\033[0;33m";
 const string BLUE = "\033[0;36m";
 const string RESET = "\033[0m";
 
+vector<vector<string>> worldMap = {
+        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
+        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
+        { "N", "N", "N", "N", "O", "O", "O", "O", "O", "O", },
+        { "N", "O", "N", "N", "O", "N", "O", "N", "O", "N", },
+        { "N", "O", "O", "O", "O", "N", "O", "N", "O", "N", },
+        { "N", "N", "N", "O", "N", "N", "O", "N", "O", "O", },
+        { "N", "N", "N", "O", "N", "N", "N", "N", "O", "N", },
+        { "N", "O", "N", "O", "N", "N", "O", "O", "O", "N", },
+        { "N", "O", "O", "O", "N", "N", "N", "N", "N", "N", },
+        { "N", "O", "N", "N", "N", "N", "N", "N", "N", "N", },
+};
+
 // Utility Functions
 string colourText(const string& text, const string& colour)
 {
@@ -349,11 +362,11 @@ void setupPlayer()
     playerInventory.at(0) = setKeepsake;
 }
 
-void displayMap()
+tuple<int, int> displayMap()
 {
     cout << "\nTest.\n";
     tuple<int, int> mapSize;
-    vector<vector<string>> map = {
+    vector<vector<string>> worldMap = {
         {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
         {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
         { "N", "N", "N", "N", "O", "O", "O", "O", "O", "O", },
@@ -365,10 +378,10 @@ void displayMap()
         { "N", "O", "O", "O", "N", "N", "N", "N", "N", "N", },
         { "N", "O", "N", "N", "N", "N", "N", "N", "N", "N", },
     };
-    mapSize = make_tuple(map[0].size(), map.size());
-    map[playerCoords[0]][playerCoords[1]] = colourText("@", BLUE);
+    mapSize = make_tuple(worldMap[0].size(), worldMap.size());
+    worldMap[playerCoords[0]][playerCoords[1]] = colourText("@", BLUE);
 
-    for (const auto& row: map) {
+    for (const auto& row: worldMap) {
         cout << " ";
         for (const auto& tile : row) {
             cout << tile;
@@ -376,19 +389,33 @@ void displayMap()
         cout << endl;
     }
 
-    // return mapSize; // todo: make sure returns. add check to make sure player can only move within boundaries
+    return mapSize;
 }
 
-void playerMovementUpdate(char input)
+void playerMovementUpdate(char input, tuple<int, int> mapSize)
 {
-    if (input == 'w') { --playerCoords[0]; }
-    else if (input == 's') { ++playerCoords[0]; }
-    else if (input == 'a') { --playerCoords[1]; }
-    else if (input == 'd') { ++playerCoords[1]; }
+    int newCoords[2];
+    copy(playerCoords, playerCoords + 2, newCoords);
+    cout << newCoords[0] << " | " << newCoords[1];
+
+    if (input == 'w') { --newCoords[0]; }
+    else if (input == 's') { ++newCoords[0]; }
+    else if (input == 'a') { --newCoords[1]; }
+    else if (input == 'd') { ++newCoords[1]; }
+
+    if (newCoords[0] >= 0 && newCoords[1] >= 0) {
+        if (newCoords[0] < get<0>(mapSize) && newCoords[1] < get<1>(mapSize)) {
+            if (worldMap[newCoords[0]][newCoords[1]] == "O") {
+                playerCoords[0] = newCoords[0];
+                playerCoords[1] = newCoords[1];
+            }
+        }
+    }
 }
 
 void generateWorld()
 {
+    tuple<int, int> mapSize;
     string currentBoss = "";
     currentBoss = selectBoss(setArea, currentAreaDay);
     setupPlayer();
@@ -399,7 +426,7 @@ void generateWorld()
         string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
         cout << colourText(" Next Boss: ", BLUE) << currentBoss << " [Q]\n";
         cout << colourText(" Current Time: ", BLUE) << dayInfo << "\n";
-        displayMap();
+        mapSize = displayMap();
         cout << textSeparator;
 
         while (true) {
@@ -409,7 +436,7 @@ void generateWorld()
                     qPressCheck(currentBoss); // todo
                 }
                 else if (input == 'w' || input == 'a' || input == 's' || input == 'd') {
-                    playerMovementUpdate(input);
+                    playerMovementUpdate(input, mapSize);
                     clearScreen();
                     break;
                 }
