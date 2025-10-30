@@ -11,7 +11,7 @@
 using namespace std;
 
 // Global Variables
-string textSeparator = "\n========================================\n\n";
+string textSeparator = "\n================================================================================\n\n";
 string titleDisplay[6] = {
     "   _____ ___.                                        .__   __                 ",
 "  /  _  \\\\_ |__ ___.__. ______ ________  _  _______  |  | |  | __ ___________ ",
@@ -44,31 +44,35 @@ int playerATK = 1;
 int playerDEF = 0;
 int playerSPD = 0;
 string playerWeapon = "None";
-vector<string> playerInventory = { "" };
+vector<string> playerInventory = { "Empty", "Empty", "Empty", "Empty" };
 
+const string INACTIVE = "\033[0;90m";
 const string RED = "\033[0;31m";
 const string GREEN = "\033[0;32m";
 const string YELLOW = "\033[0;33m";
 const string BLUE = "\033[0;36m";
 const string RESET = "\033[0m";
+const string PLAYER_TILE = " A ";
+const string OPEN_TILE = "   ";
+const string CLOSED_TILE = "NNN";
 
 vector<vector<string>> worldMap = {
-        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
-        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
-        { "N", "N", "N", "N", "O", "O", "O", "O", "O", "O", },
-        { "N", "O", "N", "N", "O", "N", "O", "N", "O", "N", },
-        { "N", "O", "O", "O", "O", "N", "O", "N", "O", "N", },
-        { "N", "N", "N", "O", "N", "N", "O", "N", "O", "O", },
-        { "N", "N", "N", "O", "N", "N", "N", "N", "O", "N", },
-        { "N", "O", "N", "O", "N", "N", "O", "O", "O", "N", },
-        { "N", "O", "O", "O", "N", "N", "N", "N", "N", "N", },
-        { "N", "O", "N", "N", "N", "N", "N", "N", "N", "N", },
+        {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
+        {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
+        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, },
+        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, },
+        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, },
 };
 
 // Utility Functions
-string colourText(const string& text, const string& colour)
+string colourText(const string& text, const string& colour, const string& reset = RESET)
 {
-    return colour + text + RESET;
+    return colour + text + reset;
 }
 
 void clearScreen()
@@ -227,6 +231,7 @@ bool checkForSave()
     if (!saveFile.is_open()) {
         cout << "No save found. Creating new file.\n";
         return false;
+        clearScreen();
     }
 
     while (getline(saveFile, currentLine)) {
@@ -362,26 +367,14 @@ void setupPlayer()
     playerInventory.at(0) = setKeepsake;
 }
 
-tuple<int, int> displayMap()
+tuple<int, int> displayMap(vector<vector<string>> map, string reset_colour)
 {
     cout << "\nTest.\n";
     tuple<int, int> mapSize;
-    vector<vector<string>> worldMap = {
-        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
-        {"N", "N", "N", "N", "N", "O", "N", "N", "N", "O",},
-        { "N", "N", "N", "N", "O", "O", "O", "O", "O", "O", },
-        { "N", "O", "N", "N", "O", "N", "O", "N", "O", "N", },
-        { "N", "O", "O", "O", "O", "N", "O", "N", "O", "N", },
-        { "N", "N", "N", "O", "N", "N", "O", "N", "O", "O", },
-        { "N", "N", "N", "O", "N", "N", "N", "N", "O", "N", },
-        { "N", "O", "N", "O", "N", "N", "O", "O", "O", "N", },
-        { "N", "O", "O", "O", "N", "N", "N", "N", "N", "N", },
-        { "N", "O", "N", "N", "N", "N", "N", "N", "N", "N", },
-    };
-    mapSize = make_tuple(worldMap[0].size(), worldMap.size());
-    worldMap[playerCoords[0]][playerCoords[1]] = colourText("@", BLUE);
+    mapSize = make_tuple(map[0].size(), map.size());
+    map[playerCoords[0]][playerCoords[1]] = colourText(PLAYER_TILE, BLUE, reset_colour);
 
-    for (const auto& row: worldMap) {
+    for (const auto& row: map) {
         cout << " ";
         for (const auto& tile : row) {
             cout << tile;
@@ -396,7 +389,7 @@ void playerMovementUpdate(char input, tuple<int, int> mapSize)
 {
     int newCoords[2];
     copy(playerCoords, playerCoords + 2, newCoords);
-    cout << newCoords[0] << " | " << newCoords[1];
+    // cout << newCoords[0] << " | " << newCoords[1];
 
     if (input == 'w') { --newCoords[0]; }
     else if (input == 's') { ++newCoords[0]; }
@@ -405,7 +398,7 @@ void playerMovementUpdate(char input, tuple<int, int> mapSize)
 
     if (newCoords[0] >= 0 && newCoords[1] >= 0) {
         if (newCoords[0] < get<0>(mapSize) && newCoords[1] < get<1>(mapSize)) {
-            if (worldMap[newCoords[0]][newCoords[1]] == "O") {
+            if (worldMap[newCoords[0]][newCoords[1]] == OPEN_TILE) {
                 playerCoords[0] = newCoords[0];
                 playerCoords[1] = newCoords[1];
             }
@@ -422,12 +415,33 @@ void generateWorld()
 
     bool mapSelected = true;
     while (true) {
+        cout << colourText("", RESET);
         displayTitle();
         string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
-        cout << colourText(" Next Boss: ", BLUE) << currentBoss << " [Q]\n";
-        cout << colourText(" Current Time: ", BLUE) << dayInfo << "\n";
-        mapSize = displayMap();
+
+        string reset_colour = "";
+        if (mapSelected == true) {
+            reset_colour = RESET;
+        }
+        else {
+            reset_colour = INACTIVE;
+        }
+
+        cout << colourText(" Next Boss: ", BLUE, reset_colour) << currentBoss << " [Q]\n";
+        cout << colourText(" Current Time: ", BLUE, reset_colour) << dayInfo << "\n";
+        cout << colourText("\n HP: ", GREEN, reset_colour) << playerHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n";
+        mapSize = displayMap(worldMap, reset_colour);
+        cout << colourText("", RESET);
         cout << textSeparator;
+
+        if (mapSelected) { cout << colourText("", INACTIVE, INACTIVE); }
+
+        cout << playerWeapon << endl;
+        int index = 1;
+        for (string item : playerInventory) {
+            cout << "[" << index << "] " << item << endl;
+            index++;
+        }
 
         while (true) {
             char input = _getch();
@@ -443,6 +457,13 @@ void generateWorld()
                 else if (input == 'e') {
                     clearScreen();
                     mapSelected = false;
+                    break;
+                }
+            }
+            else {
+                if (input == 'e') {
+                    clearScreen();
+                    mapSelected = true;
                     break;
                 }
             }
