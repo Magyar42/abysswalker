@@ -21,8 +21,18 @@ string titleDisplay[6] = {
 "        \\/    \\/\\/         \\/     \\/               \\/          \\/    \\/       "
 };
 
+const string INACTIVE = "\033[0;90m";
+const string RED = "\033[0;31m";
+const string GREEN = "\033[0;32m";
+const string YELLOW = "\033[0;33m";
+const string BLUE = "\033[0;36m";
+const string RESET = "\033[0m";
+const string PLAYER_TILE = " A ";
+const string OPEN_TILE = "   ";
+const string CLOSED_TILE = "NNN";
+
 string setArea = "Darkroot Depths";
-string setKeepsake = "None";
+string setKeepsake = "Fire Gem";
 string setOldSoul = "Soul of the Wolf Knight";
 int currentAreaDay = 1;
 string currentAreaDayOrNight = "Day";
@@ -34,9 +44,19 @@ map<string, map<string, string>> keepsakesList;
 map<string, map<string, string>> oldSoulsList;
 map<string, map<string, string>> regionsList;
 
+string colourText(const string& text, const string& colour, const string& reset = RESET)
+{
+    return colour + text + reset;
+}
+
+string getStats(string HP, string ATK, string DEF, string SPD)
+{
+    return colourText(" HP:", GREEN) + " " + HP + " | " + colourText("ATK:", RED) + " " + ATK + " | " + colourText("DEF : ", BLUE) + " " + DEF + " | " + colourText("SPD : ", YELLOW) + SPD;
+}
+
 vector<vector<string>>  qPressInfo = {
-    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" },
-    { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.", "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.", "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.", "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.", "Select this option to begin the game! Make sure you have chosen your starting gear well.", "Begin with +3 HP.", "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.", "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.", "Unknown." }
+    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item", "Greatsword", "Titanite Demon"},
+    { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.", "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.", "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.", "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.", "Select this option to begin the game! Make sure you have chosen your starting gear well.", "Begin with +3 HP.", "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.", "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.", "Unknown.", "Base effect: Gain +2 " + colourText("ATK", RED) + ".", "Titanite Demon: " + getStats("5", "4", "15", "1") + " \n When losing all its " + colourText("DEF", BLUE) + ", Titanite Demon loses 2 " + colourText("ATK", RED) + "."}
 };
 int playerCoords[2] = { 4, 4 };
 int playerHP = 10;
@@ -45,16 +65,6 @@ int playerDEF = 0;
 int playerSPD = 0;
 string playerWeapon = "None";
 vector<string> playerInventory = { "Empty", "Empty", "Empty", "Empty" };
-
-const string INACTIVE = "\033[0;90m";
-const string RED = "\033[0;31m";
-const string GREEN = "\033[0;32m";
-const string YELLOW = "\033[0;33m";
-const string BLUE = "\033[0;36m";
-const string RESET = "\033[0m";
-const string PLAYER_TILE = " A ";
-const string OPEN_TILE = "   ";
-const string CLOSED_TILE = "NNN";
 
 vector<vector<string>> worldMap = {
         {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
@@ -70,11 +80,6 @@ vector<vector<string>> worldMap = {
 };
 
 // Utility Functions
-string colourText(const string& text, const string& colour, const string& reset = RESET)
-{
-    return colour + text + reset;
-}
-
 void clearScreen()
 {
     #ifdef _WIN32
@@ -114,7 +119,7 @@ void qPressCheck(string currentSelection)
 {
     for (int i = 0; i < qPressInfo[0].size(); ++i) {
         if (qPressInfo[0][i] == currentSelection) {
-            cout << "\n [INFO]: " << qPressInfo[1][i] << "\n";
+            cout << colourText("\n [INFO] " + qPressInfo[1][i] + "\n", RESET);
         }
     }
 }
@@ -410,6 +415,7 @@ void generateWorld()
 {
     tuple<int, int> mapSize;
     string currentBoss = "";
+    int selectionIndex = 0;
     currentBoss = selectBoss(setArea, currentAreaDay);
     setupPlayer();
 
@@ -418,36 +424,68 @@ void generateWorld()
         cout << colourText("", RESET);
         displayTitle();
         string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
-
         string reset_colour = "";
-        if (mapSelected == true) {
+
+        if (mapSelected) {
             reset_colour = RESET;
         }
         else {
             reset_colour = INACTIVE;
         }
 
+        // Details + Map Display
         cout << colourText(" Next Boss: ", BLUE, reset_colour) << currentBoss << " [Q]\n";
         cout << colourText(" Current Time: ", BLUE, reset_colour) << dayInfo << "\n";
-        cout << colourText("\n HP: ", GREEN, reset_colour) << playerHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n";
         mapSize = displayMap(worldMap, reset_colour);
         cout << colourText("", RESET);
         cout << textSeparator;
 
-        if (mapSelected) { cout << colourText("", INACTIVE, INACTIVE); }
+        if (!mapSelected) {
+            reset_colour = RESET;
+        }
+        else {
+            reset_colour = INACTIVE;
+        }
 
-        cout << playerWeapon << endl;
-        int index = 1;
+        cout << colourText(" HP: ", GREEN, reset_colour) << playerHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n\n";
+        // cout << "   " << playerWeapon << endl;
+
+        // Inventory Display
+        int index = 0;
+        string displayString = "";
+        vector<string> displayList = {};
+        int unknownItemCounter = 1;
+       
+        displayList.push_back(playerWeapon);
         for (string item : playerInventory) {
-            cout << "[" << index << "] " << item << endl;
+            if (item != "Empty") { displayList.push_back(item); }
+            else {
+                displayList.push_back("Empty #" + to_string(unknownItemCounter));
+                ++unknownItemCounter;
+            }
+        }
+
+        string selectionValue = displayList[selectionIndex];
+        for (string selectionItem : displayList) {
+            if (selectionValue == selectionItem && !mapSelected) {
+                if (index != 0) { displayString = " > [" + to_string(index) + "] " + selectionItem; }
+                else { displayString = " > " + selectionItem; }
+                cout << colourText(displayString, YELLOW, reset_colour) << "\n";
+            }
+            else {
+                if (index != 0) { displayString = "   [" + to_string(index) + "] " + selectionItem; }
+                else { displayString = "   " + selectionItem; }
+                cout << displayString << "\n";
+            }
             index++;
         }
 
+        // Get Player Input
         while (true) {
             char input = _getch();
             if (mapSelected) {
                 if (input == 'q') {
-                    qPressCheck(currentBoss); // todo
+                    qPressCheck(currentBoss);
                 }
                 else if (input == 'w' || input == 'a' || input == 's' || input == 'd') {
                     playerMovementUpdate(input, mapSize);
@@ -461,9 +499,18 @@ void generateWorld()
                 }
             }
             else {
-                if (input == 'e') {
+                if (input == 'q') {
+                    qPressCheck(selectionValue);
+                }
+                else if (input == 'e') {
                     clearScreen();
                     mapSelected = true;
+                    break;
+                }
+                else if (input == 's' || input == 'w') {
+                    int newSelectionIndex = selectionIndexUpdate(selectionIndex, displayList.size(), input);
+                    selectionIndex = newSelectionIndex;
+                    clearScreen();
                     break;
                 }
             }
