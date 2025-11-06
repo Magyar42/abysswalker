@@ -11,22 +11,6 @@
 using namespace std;
 
 // Global Variables
-string textSeparator = "\n================================================================================\n\n";
-string titleDisplay[6] = {
-    "   _____ ___.                                        .__   __                 ",
-"  /  _  \\\\_ |__ ___.__. ______ ________  _  _______  |  | |  | __ ___________ ",
-" /  /_\\  \\| __ <   |  |/  ___//  ___/\\ \\/ \\/ /\\__  \\ |  | |  |/ // __ \\_  __ \\",
-"/    |    \\ \\_\\ \\___  |\\___ \\ \\___ \\  \\     /  / __ \\|  |_|    <\\  ___/|  | \\/ ",
-"\\____|__  /___  / ____/____  >____  >  \\/\\_/  (____  /____/__|_ \\\\___  >__|",
-"        \\/    \\/\\/         \\/     \\/               \\/          \\/    \\/       "
-};
-
-const string INACTIVE = "\033[0;90m";
-const string RED = "\033[0;31m";
-const string GREEN = "\033[0;32m";
-const string YELLOW = "\033[0;33m";
-const string BLUE = "\033[0;36m";
-const string RESET = "\033[0m";
 const string PLAYER_TILE = " A ";
 const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
@@ -43,16 +27,6 @@ map<int, map<string, string>> saveSlots;
 map<string, map<string, string>> keepsakesList;
 map<string, map<string, string>> oldSoulsList;
 map<string, map<string, string>> regionsList;
-
-string colourText(const string& text, const string& colour, const string& reset = RESET)
-{
-    return colour + text + reset;
-}
-
-string getStats(string HP, string ATK, string DEF, string SPD)
-{
-    return colourText(" HP:", GREEN) + " " + HP + " | " + colourText("ATK:", RED) + " " + ATK + " | " + colourText("DEF : ", BLUE) + " " + DEF + " | " + colourText("SPD : ", YELLOW) + SPD;
-}
 
 vector<vector<string>>  qPressInfo = {
     { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item", "Greatsword", "Titanite Demon"},
@@ -80,23 +54,6 @@ vector<vector<string>> worldMap = {
 };
 
 // Utility Functions
-void clearScreen()
-{
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
-
-void displayTitle()
-{
-    for (string titleLine : titleDisplay) {
-        cout << titleLine << "\n";
-    }
-    cout << textSeparator;
-}
-
 int selectionIndexUpdate(int currentIndex, int arrayLength, char input)
 {
     int newArrayLength = arrayLength - 1;
@@ -115,14 +72,7 @@ int selectionIndexUpdate(int currentIndex, int arrayLength, char input)
     return currentIndex;
 }
 
-void qPressCheck(string currentSelection)
-{
-    for (int i = 0; i < qPressInfo[0].size(); ++i) {
-        if (qPressInfo[0][i] == currentSelection) {
-            cout << colourText("\n [INFO] " + qPressInfo[1][i] + "\n", RESET);
-        }
-    }
-}
+
 
 string displayList(string listInfo, string fileName, map<string, map<string, string>> listName)
 {
@@ -223,72 +173,6 @@ string displayListSetup(string listType)
 }
 
 // Main Loop Functions
-bool checkForSave()
-{
-    displayTitle();
-
-    //int selectedSave = -1;
-    string currentLine = "";
-    int currentSlot = -1;
-    int saveSlotArray[3] = { 0, 0, 0 };
-
-    ifstream saveFile("savefile.json");
-    if (!saveFile.is_open()) {
-        cout << "No save found. Creating new file.\n";
-        return false;
-        clearScreen();
-    }
-
-    while (getline(saveFile, currentLine)) {
-        //cout << currentLine + "\n";
-        if (currentLine.empty()) continue;
-
-        if (currentLine.find("[Slot") != string::npos) {
-            currentSlot = stoi(currentLine.substr(5, 1));
-            //saveSlots[currentSlot] = map < string, string >> "()";
-        }
-
-        // Use npos!!
-        // If ":" is in this line, find it and get the key + value for dictionary
-        else if (currentSlot != -1 && currentLine.find(":") != string::npos) {
-            size_t colonPosition = currentLine.find(":");
-            string key = currentLine.substr(0, colonPosition);
-            string value = currentLine.substr(colonPosition + 2);
-            saveSlots[currentSlot][key] = value;
-
-            // Mark save slot as not empty (for display)
-            if (saveSlotArray[currentSlot] == 0) {
-                saveSlotArray[currentSlot] = 1;
-            }
-        }
-    }
-
-    saveFile.close();
-
-    string slotName = "";
-    // Print saves to choose from
-    cout << "Enter the index of a save slot to continue.\n\n";
-    for (int i = 1; i < 4; i++) {
-        slotName = "Slot #" + to_string(i);
-        cout << colourText(slotName, YELLOW) << ":\n";
-
-        if (saveSlotArray[i-1] == 1) {
-            cout << " - " << saveSlots[i-1]["items"] << "/56 Items\n";
-            cout << " - " << saveSlots[i-1]["old_souls"] << "/6 Old Souls\n";
-        }
-        else {
-            cout << " Empty\n";
-        }
-    }
-    cout << textSeparator;
-
-    char selectedSave = _getch();
-    cout << "Loading save slot " << selectedSave << "...\n";
-
-    clearScreen();
-    return true;
-}
-
 void displayGamePreparations()
 {
     string newlySelectedItem = "";
