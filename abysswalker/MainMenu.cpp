@@ -96,6 +96,8 @@ void MainMenu::displayMenuOptions()
             }
         }
 
+
+        // TODO: Remove below, and replace with the new List class
         while (true) {
             char qCheck = _getch();
             if (qCheck == 'q') {
