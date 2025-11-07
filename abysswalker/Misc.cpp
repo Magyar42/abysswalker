@@ -1,3 +1,4 @@
+#include "Misc.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -20,10 +21,6 @@ const string GREEN = "\033[0;32m";
 const string YELLOW = "\033[0;33m";
 const string BLUE = "\033[0;36m";
 
-// Forward Declarations
-string colourText(const string& text, const string& colour, const string& reset = RESET);
-string getStats(string HP, string ATK, string DEF, string SPD);
-
 // Structs
 vector<vector<string>>  qPressInfo = {
     { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item", "Greatsword", "Titanite Demon"},
@@ -32,7 +29,7 @@ vector<vector<string>>  qPressInfo = {
 
 // Misc Functions
 
-string colourText(const string& text, const string& colour, const string& reset = RESET)
+string colourText(const string& text, const string& colour, const string& reset)
 {
     return colour + text + reset;
 }

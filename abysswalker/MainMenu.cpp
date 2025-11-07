@@ -1,5 +1,6 @@
 #include "MainMenu.h"
-#include "Misc.cpp"
+#include "List.h"
+#include "Misc.h"
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -72,11 +73,9 @@ void MainMenu::displaySaves()
 
 void MainMenu::displayMenuOptions()
 {
-    string newlySelectedItem = "";
-    string selectionArray[] = { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start" };
-    int selectionArrayLength = sizeof(selectionArray) / sizeof(selectionArray[0]);
-    int selectionIndex = 0;
+    vector<string> selectionArray = { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start" };
 
+    List mainMenuOptions("Main Menu", selectionArray);
     while (true) {
         displayTitle();
         cout << " Prepare for your journey before starting. You can press Q for more information about the currently selected line at any time.\n\n";
@@ -85,40 +84,8 @@ void MainMenu::displayMenuOptions()
         cout << colourText(" Old Soul: ", BLUE) << setOldSoul << "\n";
         cout << textSeparator;
 
-        string selectionValue = selectionArray[selectionIndex];
-        //cout << "  Change Region\n  Change Keepsake\n  Change Old Soul\n  Start\n";
-        for (string selectionItem : selectionArray) {
-            if (selectionValue == selectionItem) {
-                cout << colourText(" > " + selectionItem, YELLOW) << "\n";
-            }
-            else {
-                cout << "   " << selectionItem << "\n";
-            }
-        }
-
-
-        // TODO: Remove below, and replace with the new List class
-        while (true) {
-            char qCheck = _getch();
-            if (qCheck == 'q') {
-                qPressCheck(selectionValue);
-            }
-            else if (qCheck == 's' || qCheck == 'w') {
-                int newSelectionIndex = selectionIndexUpdate(selectionIndex, selectionArrayLength, qCheck);
-                selectionIndex = newSelectionIndex;
-                clearScreen();
-                break;
-            }
-            else if (qCheck == 'e') {
-                clearScreen();
-                newlySelectedItem = displayListSetup(selectionValue);
-                if (selectionValue == "Change Keepsake") { setKeepsake = newlySelectedItem; }
-                else if (selectionValue == "Change Old Soul") { setOldSoul = newlySelectedItem; }
-                else if (selectionValue == "Change Region") { setArea = newlySelectedItem; }
-                else if (selectionValue == "Start") { gameStarted = true; }
-                break;
-            }
-        }
+        string returnValue = mainMenuOptions.displayItems();
+        cout << returnValue;
         if (gameStarted) { break; }
     }
 }

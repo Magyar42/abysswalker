@@ -6,13 +6,18 @@ using namespace std;
 class List
 {
 private:
-	string newlySelectedItem, currentSelectedItem;
+	string newlySelectedItem, currentSelectedItem, listType;
 	int selectedItemIndex, listLength;
 	vector<string> listItems;
 	bool importFromFile;
-public:
-	List(vector<string> list, bool import = false);
 
-	void displayItems();
+	string itemSelectionEffect();
+	int selectionIndexUpdate(int currentIndex, int arrayLength, char input);
+	string selectSublist(string newList);
+public:
+	List(string type, vector<string> list, bool import = false);
+
+	string displayItems();
+	string displayImportedItems(string filename);
 };
 

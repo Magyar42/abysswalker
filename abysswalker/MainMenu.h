@@ -13,10 +13,7 @@ public:
 	string setArea, setKeepsake, setOldSoul;
 	bool gameStarted;
 
-	//MainMenu();
-	//MainMenu(string setArea);
-	//MainMenu(string setArea, string setKeepsake);
-	MainMenu(string setArea, string setKeepsake, string setOldSoul);
+	MainMenu(string area, string keepsake, string soul);
 
 	void displaySaves();
 	void displayMenuOptions();
