@@ -13,7 +13,6 @@ string setArea = "Darkroot Depths";
 string setKeepsake = "Fire Gem";
 string setOldSoul = "Soul of the Wolf Knight";
 
-// Game Loop
 int main()
 {
     /*checkForSave();
@@ -22,4 +21,8 @@ int main()
 
     MainMenu menu(setArea, setKeepsake, setOldSoul);
     menu.displayMenuOptions();
+
+    // TODO next: re-add in basic level. should be simple, just use the old code.
+    /*Level level();
+    level.display();*/
 }

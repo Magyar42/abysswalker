@@ -14,9 +14,10 @@ extern const string YELLOW;
 extern const string BLUE;
 
 extern vector<vector<string>>  qPressInfo;
-extern map<string, map<string, string>> keepsakesList;
-extern map<string, map<string, string>> oldSoulsList;
-extern map<string, map<string, string>> regionsList;
+extern map<string, map<string, string>> keepsakesMap;
+extern map<string, map<string, string>> oldSoulsMap;
+extern map<string, map<string, string>> regionsMap;
+extern vector<string> keepsakesVector;
 
 string colourText(const string& text, const string& colour, const string& reset = RESET);
 string getStats(string HP, string ATK, string DEF, string SPD);

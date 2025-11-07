@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 class List
@@ -18,6 +19,6 @@ public:
 	List(string type, vector<string> list, bool import = false);
 
 	string displayItems();
-	string displayImportedItems(string filename);
+	string displayImportedItems(string filename, map<string, map<string, string>> map);
 };
 
