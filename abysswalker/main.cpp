@@ -1,5 +1,6 @@
 ﻿
 #include "MainMenu.h"
+#include "Level.h"
 #include <conio.h>
 #include <iostream>
 #include <map>
@@ -22,7 +23,6 @@ int main()
     MainMenu menu(setArea, setKeepsake, setOldSoul);
     menu.displayMenuOptions();
 
-    // TODO next: re-add in basic level. should be simple, just use the old code.
-    /*Level level();
-    level.display();*/
+    Level level(setArea, setKeepsake, setOldSoul);
+    level.display();
 }

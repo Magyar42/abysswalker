@@ -21,14 +21,70 @@ const string GREEN = "\033[0;32m";
 const string YELLOW = "\033[0;33m";
 const string BLUE = "\033[0;36m";
 
+const string PLAYER_TILE = " A ";
+const string OPEN_TILE = "   ";
+const string CLOSED_TILE = "NNN";
+
+vector<vector<string>> worldMap = {
+        {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
+        {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
+        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, },
+        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, },
+        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, },
+        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, },
+};
+
 // Structs
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
+vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon"};
+vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm of the Abyss" };
 map<string, map<string, string>> keepsakesMap = {};
 map<string, map<string, string>> oldSoulsMap = {};
 map<string, map<string, string>> regionsMap = {};
 vector<vector<string>>  qPressInfo = {
-    { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start", "Life Ring", "Fire Gem", "Black Firebombs", "Test Item", "Greatsword", "Titanite Demon"},
-    { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.", "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.", "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.", "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.", "Select this option to begin the game! Make sure you have chosen your starting gear well.", "Begin with +3 HP.", "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.", "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.", "Unknown.", "Base effect: Gain +2 " + colourText("ATK", RED) + ".", "Titanite Demon: " + getStats("5", "4", "15", "1") + " \n When losing all its " + colourText("DEF", BLUE) + ", Titanite Demon loses 2 " + colourText("ATK", RED) + "."}
+    { "View Itemlist",
+    "Change Region",
+    "Change Keepsake",
+    "Change Old Soul",
+    "Start",
+    "Life Ring",
+    "Fire Gem",
+    "Black Firebombs",
+    "Test Item",
+    "Greatsword",
+    "Darkroot Depths",
+    "Oolacile Township",
+    "Chasm of the Abyss",
+    "Soul of the Wolf Knight",
+    "Soul of the Dragonslayer",
+    "Soul of the Chaos Flame",
+    "Soul of the Paledrake",
+    "Soul of the Darkmoon",
+    "Titanite Demon"},
+
+    { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.",
+    "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.",
+    "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.",
+    "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.",
+    "Select this option to begin the game! Make sure you have chosen your starting gear well.",
+    "Begin with +3 HP.",
+    "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.",
+    "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.",
+    "Unknown.",
+    "Base effect: Gain +2 " + colourText("ATK", RED) + ".",
+    "A dark and untamed forest with hostile, yet weak, wildlife. The basin at its end is said to hold a great danger.",
+    "A decrepit town that has been afflicted by the spread of the Abyss. Its denizens roam without their minds, acting as a potential threat if not dispatched quickly.",
+    "The source of Oolacile's blight. A deep and dark chasm that has an unknown source. Can an individual even survive in such a place? There's one way to find out.",
+    "You are Sir Artorias, one of Lord Gwyn's Four Great Knights. Your ability with a greatsword is unmatched.",
+    "Dragonslayer Ornstein was captain of the Four Great Knights, leading the war against the dragons alongside Lord Gwyn's exiled firstborn.",
+    "The Witch of Izalith inherited the Soul of Life, and her daughters bear her legacy. Pyromancy comes naturally from Chaos.",
+    "Seath the Scaleless was born lacking the stone scales of his brethren. Turning to forbidden sorceries for a solution, he descended into madness.",
+    "Gwyndolin was the third child of Lord Gwyn. Hidden from public view, he lead the Blades of the Darkmoon to dispense justice across Lordran.",
+    "Titanite Demon: " + getStats("5", "4", "15", "1") + " \n When losing all its " + colourText("DEF", BLUE) + ", Titanite Demon loses 2 " + colourText("ATK", RED) + "."}
 };
 
 // Misc Functions

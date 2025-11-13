@@ -135,11 +135,6 @@ string List::itemSelectionEffect()
     string selectedItem = "";
     if (listType == "Main Menu") {
         clearScreen();
-        /*newlySelectedItem = displayListSetup(currentSelectedItem);
-        if (currentSelectedItem == "Change Keepsake") { setKeepsake = newlySelectedItem; }
-        else if (currentSelectedItem == "Change Old Soul") { setOldSoul = newlySelectedItem; }
-        else if (currentSelectedItem == "Change Region") { setArea = newlySelectedItem; }
-        else if (currentSelectedItem == "Start") { gameStarted = true; }*/
         if (currentSelectedItem == "Change Keepsake" || currentSelectedItem == "Change Old Soul" || currentSelectedItem == "Change Region") {
             selectedItem = selectSublist(currentSelectedItem);
         }
@@ -147,7 +142,7 @@ string List::itemSelectionEffect()
             selectedItem = "start";
         }
     }
-    else if (listType == "Change Keepsake") {
+    else if (listType == "Change Keepsake" || listType == "Change Old Soul" || listType == "Change Region") {
         clearScreen();
         selectedItem = currentSelectedItem;
     }
@@ -163,7 +158,15 @@ string List::selectSublist(string newList)
         selectedItem = keepsakesList.displayImportedItems("keepsakes.json", keepsakesMap);
         selectedItem += "|keepsake";
     }
-    /*else if (listType == "Change Old Soul") { selectedItem = displayList(listType, "oldsouls.json", oldSoulsList); }
-    else if (listType == "Change Region") { selectedItem = displayList(listType, "regions.json", regionsList); }*/
+    else if (newList == "Change Old Soul") {
+        List oldSoulsList(newList, oldSoulsVector, true);
+        selectedItem = oldSoulsList.displayImportedItems("oldsouls.json", oldSoulsMap);
+        selectedItem += "|oldsoul";
+    }
+    else if (newList == "Change Region") {
+        List regionsList(newList, regionsVector, true);
+        selectedItem = regionsList.displayImportedItems("regions.json", regionsMap);
+        selectedItem += "|region";
+    }
     return selectedItem;
 }

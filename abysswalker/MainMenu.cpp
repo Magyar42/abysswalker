@@ -89,6 +89,8 @@ void MainMenu::displayMenuOptions()
             string token = returnValue.substr(returnValue.find("|"), returnValue.length() + 1);
             string item = returnValue.substr(0, returnValue.find("|"));
             if (token == "|keepsake") { setKeepsake = item; }
+            else if (token == "|oldsoul") { setOldSoul = item; }
+            else if (token == "|region") { setArea = item; }
         }
         else if (returnValue == "start") {
             gameStarted = true;
