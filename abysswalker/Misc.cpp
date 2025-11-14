@@ -26,16 +26,16 @@ const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
 
 vector<vector<string>> worldMap = {
-        {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
-        {CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE,},
-        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, },
-        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
-        { CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
-        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, },
-        { CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, },
-        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, },
-        { CLOSED_TILE, OPEN_TILE, OPEN_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, },
-        { CLOSED_TILE, OPEN_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, CLOSED_TILE, },
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
+    {"", "", "", "", "", "", "", "", "", ""},
 };
 
 // Structs

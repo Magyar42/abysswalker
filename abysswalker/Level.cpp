@@ -5,6 +5,8 @@
 #include <conio.h>
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 Level::Level(string area, string keepsake, string oldSoul)
@@ -18,16 +20,45 @@ Level::Level(string area, string keepsake, string oldSoul)
 	currentAreaTime = "9:00";
 	gameStarted = false;
 	mapSelected = true;
-	playerCoords = make_tuple(4, 4);
+	playerCoords = make_tuple(1, 1); // todo: add random spawning
+	mapSectorCoords = make_tuple(0, 0);
 	playerHP = 10;
 	playerATK = 1;
 	playerDEF = 0;
 	playerSPD = 0;
 	playerWeapon = "None";
 	playerInventory = { "Empty", "Empty", "Empty", "Empty" };
+	playerTilePrev = "";
 
+	initWorldMap();
 	currentBoss = selectBoss(setArea, currentAreaDay);
 	playerSetup();
+}
+
+void Level::initWorldMap()
+{
+	string currentLine = "";
+	int tileIndex = 0;
+	int rowIndex = 0;
+	ifstream levelFile("abysswalker_level0.csv");
+
+	while (getline(levelFile, currentLine)) {
+		if (currentLine.empty()) continue;
+
+		for (char tileValue : currentLine) {
+			if (tileValue == '1') {
+				worldMap[rowIndex][tileIndex] = CLOSED_TILE;
+				tileIndex++;
+			}
+			else if (tileValue == '0') {
+				worldMap[rowIndex][tileIndex] = OPEN_TILE;
+				tileIndex++;
+			}
+		}
+		rowIndex++;
+		tileIndex = 0;
+	}
+	levelFile.close();
 }
 
 string Level::selectBoss(string area, int day)
@@ -62,13 +93,15 @@ void Level::playerSetup()
 	playerInventory.at(0) = setKeepsake;
 }
 
-tuple<int, int> Level::displayMap(vector<vector<string>> map, string reset_colour)
+tuple<int, int> Level::displayMap( string reset_colour)
 {
 	tuple<int, int> mapSize;
-	mapSize = make_tuple(map[0].size(), map.size());
-	map[get<0>(playerCoords)][get<1>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+	mapSize = make_tuple(worldMap[0].size(), worldMap.size());
 
-	for (const auto& row : map) {
+	playerTilePrev = worldMap[get<0>(playerCoords)][get<1>(playerCoords)];
+	worldMap[get<0>(playerCoords)][get<1>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+
+	for (const auto& row : worldMap) {
 		cout << " ";
 		for (const auto& tile : row) {
 			cout << tile;
@@ -81,6 +114,8 @@ tuple<int, int> Level::displayMap(vector<vector<string>> map, string reset_colou
 
 void Level::updateMovement(char input)
 {
+	worldMap[get<0>(playerCoords)][get<1>(playerCoords)] = playerTilePrev;
+
 	tuple<int, int> mapSize;
 	mapSize = make_tuple(worldMap[0].size(), worldMap.size());
 
@@ -112,7 +147,7 @@ void Level::displayWorld()
 	cout << colourText(" Next Boss: ", BLUE, reset_colour) << currentBoss << " [Q]\n";
 	cout << colourText(" Current Time: ", BLUE, reset_colour) << dayInfo << "\n\n";
 
-	mapSize = displayMap(worldMap, reset_colour);
+	mapSize = displayMap(reset_colour);
 	cout << textSeparator;
 }
 

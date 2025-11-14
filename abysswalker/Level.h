@@ -8,13 +8,14 @@ class Level
 {
 private:
 	string setArea, setKeepsake, setOldSoul;
-	string currentAreaDayOrNight, currentAreaTime, currentBoss;
+	string currentAreaDayOrNight, currentAreaTime, currentBoss, playerTilePrev;
 	int currentAreaDay;
-	tuple<int, int> playerCoords;
+	tuple<int, int> playerCoords, mapSectorCoords;
 	bool gameStarted, mapSelected;
 
+	void initWorldMap();
 	string selectBoss(string area, int day);
-	tuple<int, int> displayMap(vector<vector<string>> map, string reset_colour);
+	tuple<int, int> displayMap(string reset_colour);
 	void playerSetup();
 	void updateMovement(char input);
 	void displayWorld();
