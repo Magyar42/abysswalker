@@ -117,7 +117,6 @@ int List::selectionIndexUpdate(int currentIndex, int arrayLength, char input)
 {
     int newArrayLength = arrayLength - 1;
 
-    // W and S press will cycle through list of options
     if (input == 's') {
         if (currentIndex >= newArrayLength) { currentIndex = 0; }
         else { ++currentIndex; }
@@ -145,6 +144,9 @@ string List::itemSelectionEffect()
     else if (listType == "Change Keepsake" || listType == "Change Old Soul" || listType == "Change Region") {
         clearScreen();
         selectedItem = currentSelectedItem;
+    }
+    else if (listType == "Inventory") {
+        selectedItem = "true";
     }
 
     return selectedItem;

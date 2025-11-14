@@ -16,10 +16,6 @@ string setOldSoul = "Soul of the Wolf Knight";
 
 int main()
 {
-    /*checkForSave();
-    displayGamePreparations();
-    generateWorld();*/
-
     MainMenu menu(setArea, setKeepsake, setOldSoul);
     menu.displayMenuOptions();
 

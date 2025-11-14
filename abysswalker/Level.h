@@ -16,10 +16,12 @@ private:
 	string selectBoss(string area, int day);
 	tuple<int, int> displayMap(vector<vector<string>> map, string reset_colour);
 	void playerSetup();
-	void updateMovement(char input, tuple<int, int> mapSize);
+	void updateMovement(char input);
 	void displayWorld();
-	void displayInventory();
+	void displayInventory(vector<string> inventory);
+	void displayPlayerInfo();
 	vector<string> initInvDisplay();
+	void getPlayerInput();
 public:
 	Level(string area, string keepsake, string oldSoul);
 

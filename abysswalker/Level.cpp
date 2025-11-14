@@ -2,6 +2,7 @@
 #include "Misc.h"
 #include "List.h"
 #include <tuple>
+#include <conio.h>
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -78,12 +79,12 @@ tuple<int, int> Level::displayMap(vector<vector<string>> map, string reset_colou
 	return mapSize;
 }
 
-void Level::updateMovement(char input, tuple<int, int> mapSize)
+void Level::updateMovement(char input)
 {
-	tuple<int, int> newCoords = playerCoords;
-	// copy(playerCoords, playerCoords + 2, newCoords);
-	// cout << newCoords[0] << " | " << newCoords[1];
+	tuple<int, int> mapSize;
+	mapSize = make_tuple(worldMap[0].size(), worldMap.size());
 
+	tuple<int, int> newCoords = playerCoords;
 	if (input == 'w') { --get<0>(newCoords); }
 	else if (input == 's') { ++get<0>(newCoords); }
 	else if (input == 'a') { --get<1>(newCoords); }
@@ -109,17 +110,26 @@ void Level::displayWorld()
 	else { reset_colour = INACTIVE; }
 
 	cout << colourText(" Next Boss: ", BLUE, reset_colour) << currentBoss << " [Q]\n";
-	cout << colourText(" Current Time: ", BLUE, reset_colour) << dayInfo << "\n";
-	cout << colourText(" HP: ", GREEN, reset_colour) << playerHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n\n";
+	cout << colourText(" Current Time: ", BLUE, reset_colour) << dayInfo << "\n\n";
 
 	mapSize = displayMap(worldMap, reset_colour);
 	cout << textSeparator;
 }
 
-void Level::displayInventory()
+void Level::displayInventory(vector<string> inventory)
 {
-	cout << "test";
-	// todo: display inv stuff but just grey innit
+	for (string item : inventory) {
+		cout << "   " << colourText(item, INACTIVE) << "\n";
+	}
+}
+
+void Level::displayPlayerInfo()
+{
+	string reset_colour = "";
+	if (mapSelected) { reset_colour = INACTIVE; }
+	else { reset_colour = RESET; }
+
+	cout << colourText(" HP: ", GREEN, reset_colour) << playerHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n\n";
 }
 
 vector<string> Level::initInvDisplay()
@@ -141,6 +151,26 @@ vector<string> Level::initInvDisplay()
 	return displayList;
 }
 
+void Level::getPlayerInput()
+{
+	while (mapSelected) {
+		char input = _getch();
+		if (input == 'q') {
+			qPressCheck(currentBoss);
+		}
+		else if (input == 'w' || input == 'a' || input == 's' || input == 'd') {
+			updateMovement(input);
+			clearScreen();
+			break;
+		}
+		else if (input == 'e') {
+			clearScreen();
+			mapSelected = false;
+			break;
+		}
+	}
+}
+
 void Level::display()
 {
 	vector<string> playerInvDisplay;
@@ -150,10 +180,15 @@ void Level::display()
 	while (true) {
 		displayWorld();
 
-		if (mapSelected) { playerInv.displayItems(); }
-		else { displayInventory(); }
+		displayPlayerInfo();
+		if (!mapSelected) {
+			string returnValue = playerInv.displayItems();
+			if (returnValue == "true") { mapSelected = true; }
+			clearScreen();
+			continue;
+		}
+		else { displayInventory(playerInvDisplay); }
 
-		/*string test;
-		cin >> test;*/
+		getPlayerInput();
 	}
 }
