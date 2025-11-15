@@ -25,19 +25,6 @@ const string PLAYER_TILE = " A ";
 const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
 
-vector<vector<string>> worldMap = {
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-    {"", "", "", "", "", "", "", "", "", ""},
-};
-
 // Structs
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
 vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon"};

@@ -7,15 +7,33 @@ using namespace std;
 class Level
 {
 private:
+	struct mapSector {
+		vector<string> sectorTileRows;
+		tuple<int, int> sectorCoords;
+	};
+
 	string setArea, setKeepsake, setOldSoul;
 	string currentAreaDayOrNight, currentAreaTime, currentBoss, playerTilePrev;
 	int currentAreaDay;
 	tuple<int, int> playerCoords, mapSectorCoords;
 	bool gameStarted, mapSelected;
+	vector<mapSector> levelSectors;
+	vector<vector<string>> displayedSector = {
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+	};
 
 	void initWorldMap();
 	string selectBoss(string area, int day);
-	tuple<int, int> displayMap(string reset_colour);
+	void displayMap(string reset_colour);
 	void playerSetup();
 	void updateMovement(char input);
 	void displayWorld();
@@ -23,6 +41,8 @@ private:
 	void displayPlayerInfo();
 	vector<string> initInvDisplay();
 	void getPlayerInput();
+	void assignSectorToMap(tuple<int, int> numSector);
+	void loadNewSector();
 public:
 	Level(string area, string keepsake, string oldSoul);
 

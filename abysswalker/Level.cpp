@@ -9,6 +9,12 @@
 #include <ctime>
 using namespace std;
 
+//struct Level::mapSector {
+//	// todo, potentially: for sectorTileRows, use binary? bitwise innit
+//	vector<string> sectorTileRows;
+//	tuple<int, int> sectorCoords;
+//};
+
 Level::Level(string area, string keepsake, string oldSoul)
 {
 	setArea = area;
@@ -30,6 +36,8 @@ Level::Level(string area, string keepsake, string oldSoul)
 	playerInventory = { "Empty", "Empty", "Empty", "Empty" };
 	playerTilePrev = "";
 
+	vector<mapSector> levelSectors;
+
 	initWorldMap();
 	currentBoss = selectBoss(setArea, currentAreaDay);
 	playerSetup();
@@ -40,25 +48,37 @@ void Level::initWorldMap()
 	string currentLine = "";
 	int tileIndex = 0;
 	int rowIndex = 0;
-	ifstream levelFile("abysswalker_level0.csv");
+	string currentLineResult = "";
+	vector<string> resultVector;
 
-	while (getline(levelFile, currentLine)) {
-		if (currentLine.empty()) continue;
+	for (int i = 0; i < 2; i++) {
+		string sectorFile = "abysswalker_level" + to_string(i) + ".csv";
+		ifstream levelFile(sectorFile);
 
-		for (char tileValue : currentLine) {
-			if (tileValue == '1') {
-				worldMap[rowIndex][tileIndex] = CLOSED_TILE;
-				tileIndex++;
+		while (getline(levelFile, currentLine)) {
+			if (currentLine.empty()) continue;
+
+			for (char tileValue : currentLine) {
+				if (tileValue == '1') {
+					currentLineResult += "1";
+					tileIndex++;
+				}
+				else if (tileValue == '0') {
+					currentLineResult += "0";
+					tileIndex++;
+				}
 			}
-			else if (tileValue == '0') {
-				worldMap[rowIndex][tileIndex] = OPEN_TILE;
-				tileIndex++;
-			}
+			resultVector.push_back(currentLineResult);
+			rowIndex++;
+			tileIndex = 0;
+			currentLineResult = "";
 		}
-		rowIndex++;
-		tileIndex = 0;
+		levelFile.close();
+
+		levelSectors.emplace_back();
+		levelSectors.back().sectorTileRows = resultVector;
+		levelSectors.back().sectorCoords = make_tuple(i, 0);
 	}
-	levelFile.close();
 }
 
 string Level::selectBoss(string area, int day)
@@ -93,31 +113,68 @@ void Level::playerSetup()
 	playerInventory.at(0) = setKeepsake;
 }
 
-tuple<int, int> Level::displayMap( string reset_colour)
+void Level::assignSectorToMap(tuple<int, int> numSector)
 {
-	tuple<int, int> mapSize;
-	mapSize = make_tuple(worldMap[0].size(), worldMap.size());
+	int rowIndex = 0;
+	int tileIndex = 0;
 
-	playerTilePrev = worldMap[get<0>(playerCoords)][get<1>(playerCoords)];
-	worldMap[get<0>(playerCoords)][get<1>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+	for (mapSector sector : levelSectors) {
+		if (sector.sectorCoords == numSector) {
+			for (const auto& row : sector.sectorTileRows) {
+				for (char tile : row) {
+					// todo: below crashes when switching to another map, initial loading works
+					if (tile == '0') { displayedSector[rowIndex][tileIndex] = OPEN_TILE; }
+					else { displayedSector[rowIndex][tileIndex] = CLOSED_TILE; }
+					tileIndex++;
+				}
+				rowIndex++;
+				tileIndex = 0;
+			}
+		}
+	}
+	
+}
 
-	for (const auto& row : worldMap) {
+void Level::loadNewSector()
+{
+	mapSectorCoords = make_tuple(1, 0);
+	vector<vector<string>> displayedSector = {
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+	};
+}
+
+void Level::displayMap(string reset_colour)
+{
+	cout << 1;
+	assignSectorToMap(mapSectorCoords);
+	cout << 2;
+
+	playerTilePrev = displayedSector[get<0>(playerCoords)][get<1>(playerCoords)];
+	displayedSector[get<0>(playerCoords)][get<1>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+
+	for (const auto& row : displayedSector) {
 		cout << " ";
 		for (const auto& tile : row) {
 			cout << tile;
 		}
 		cout << endl;
 	}
-
-	return mapSize;
 }
 
 void Level::updateMovement(char input)
 {
-	worldMap[get<0>(playerCoords)][get<1>(playerCoords)] = playerTilePrev;
+	displayedSector[get<0>(playerCoords)][get<1>(playerCoords)] = playerTilePrev;
 
-	tuple<int, int> mapSize;
-	mapSize = make_tuple(worldMap[0].size(), worldMap.size());
+	tuple<int, int> mapSize = make_tuple(10, 16);
 
 	tuple<int, int> newCoords = playerCoords;
 	if (input == 'w') { --get<0>(newCoords); }
@@ -127,17 +184,18 @@ void Level::updateMovement(char input)
 
 	if (get<0>(newCoords) >= 0 && get<1>(newCoords) >= 0) {
 		if (get<0>(newCoords) < get<0>(mapSize) && get<1>(newCoords) < get<1>(mapSize)) {
-			if (worldMap[get<0>(newCoords)][get<1>(newCoords)] == OPEN_TILE) {
+			if (displayedSector[get<0>(newCoords)][get<1>(newCoords)] == OPEN_TILE) {
 				get<0>(playerCoords) = get<0>(newCoords);
 				get<1>(playerCoords) = get<1>(newCoords);
 			}
+			//else { loadNewSector(); }
 		}
+		//else { loadNewSector(); }
 	}
 }
 
 void Level::displayWorld()
 {
-	tuple<int, int> mapSize;
 	string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
 	string reset_colour = "";
 
@@ -147,7 +205,7 @@ void Level::displayWorld()
 	cout << colourText(" Next Boss: ", BLUE, reset_colour) << currentBoss << " [Q]\n";
 	cout << colourText(" Current Time: ", BLUE, reset_colour) << dayInfo << "\n\n";
 
-	mapSize = displayMap(reset_colour);
+	displayMap(reset_colour);
 	cout << textSeparator;
 }
 
@@ -201,6 +259,11 @@ void Level::getPlayerInput()
 		else if (input == 'e') {
 			clearScreen();
 			mapSelected = false;
+			break;
+		}
+		else if (input == 'p') {
+			clearScreen();
+			loadNewSector();
 			break;
 		}
 	}

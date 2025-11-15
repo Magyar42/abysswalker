@@ -16,7 +16,7 @@ extern const string BLUE;
 extern const string PLAYER_TILE;
 extern const string OPEN_TILE;
 extern const string CLOSED_TILE;
-extern vector<vector<string>> worldMap;
+// extern vector<vector<string>> worldMap;
 
 extern vector<vector<string>>  qPressInfo;
 extern map<string, map<string, string>> keepsakesMap;
