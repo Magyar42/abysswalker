@@ -9,12 +9,6 @@
 #include <ctime>
 using namespace std;
 
-//struct Level::mapSector {
-//	// todo, potentially: for sectorTileRows, use binary? bitwise innit
-//	vector<string> sectorTileRows;
-//	tuple<int, int> sectorCoords;
-//};
-
 Level::Level(string area, string keepsake, string oldSoul)
 {
 	setArea = area;
@@ -226,6 +220,7 @@ void Level::updateMovement(char input)
 
 void Level::displayWorld()
 {
+	displayTitle();
 	string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
 	string reset_colour = "";
 

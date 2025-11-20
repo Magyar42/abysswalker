@@ -32,6 +32,7 @@ vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm 
 map<string, map<string, string>> keepsakesMap = {};
 map<string, map<string, string>> oldSoulsMap = {};
 map<string, map<string, string>> regionsMap = {};
+map<string, map<string, string>> enemiesMap = {};
 vector<vector<string>>  qPressInfo = {
     { "View Itemlist",
     "Change Region",
