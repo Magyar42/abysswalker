@@ -42,7 +42,7 @@ private:
 	vector<string> initInvDisplay();
 	void getPlayerInput();
 	void assignSectorToMap(tuple<int, int> numSector);
-	void loadNewSector();
+	void loadNewSector(tuple<int, int> coords);
 public:
 	Level(string area, string keepsake, string oldSoul);
 

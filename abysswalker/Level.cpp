@@ -51,10 +51,19 @@ void Level::initWorldMap()
 	string currentLineResult = "";
 	vector<string> resultVector;
 
-	for (int i = 0; i < 2; i++) {
+	int numSectorsPerRow = 2;
+	int numSectors = 4;
+	int sectorX = 0;
+	int sectorY = 0;
+	int sectorPerRowCounter = 0;
+
+	for (int i = 0; i < numSectors; i++) {
+		sectorPerRowCounter++;
 		string sectorFile = "abysswalker_level" + to_string(i) + ".csv";
 		ifstream levelFile(sectorFile);
 
+		rowIndex = 0;
+		resultVector.clear();
 		while (getline(levelFile, currentLine)) {
 			if (currentLine.empty()) continue;
 
@@ -77,7 +86,14 @@ void Level::initWorldMap()
 
 		levelSectors.emplace_back();
 		levelSectors.back().sectorTileRows = resultVector;
-		levelSectors.back().sectorCoords = make_tuple(i, 0);
+		levelSectors.back().sectorCoords = make_tuple(sectorX, sectorY);
+
+		sectorX++;
+		if (sectorPerRowCounter >= numSectorsPerRow) {
+			sectorPerRowCounter = 0;
+			sectorX = 0;
+			sectorY++;
+		}
 	}
 }
 
@@ -135,31 +151,46 @@ void Level::assignSectorToMap(tuple<int, int> numSector)
 	
 }
 
-void Level::loadNewSector()
+void Level::loadNewSector(tuple<int, int> coords)
 {
-	mapSectorCoords = make_tuple(1, 0);
-	vector<vector<string>> displayedSector = {
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-	};
+	int xOffsetSector = 0;
+	int yOffsetSector = 0;
+	int charPosX = get<0>(playerCoords);
+	int charPosY = get<1>(playerCoords);
+
+	switch (get<1>(coords)) {
+		case 10:
+			yOffsetSector = 1;
+			charPosY = 0;
+			break;
+		case -1:
+			yOffsetSector = -1;
+			charPosY = 9;
+			break;
+	}
+	switch (get<0>(coords)) {
+		case 16:
+			xOffsetSector = 1;
+			charPosX = 0;
+			break;
+		case -1:
+			xOffsetSector = -1;
+			charPosX = 15;
+			break;
+	}
+
+	int newCoordX = get<0>(mapSectorCoords) + xOffsetSector;
+	int newCoordY = get<1>(mapSectorCoords) + yOffsetSector;
+	mapSectorCoords = make_tuple(newCoordX, newCoordY);
+	playerCoords = make_tuple(charPosX, charPosY);
 }
 
 void Level::displayMap(string reset_colour)
 {
-	cout << 1;
 	assignSectorToMap(mapSectorCoords);
-	cout << 2;
 
-	playerTilePrev = displayedSector[get<0>(playerCoords)][get<1>(playerCoords)];
-	displayedSector[get<0>(playerCoords)][get<1>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+	playerTilePrev = displayedSector[get<1>(playerCoords)][get<0>(playerCoords)];
+	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
 
 	for (const auto& row : displayedSector) {
 		cout << " ";
@@ -172,25 +203,24 @@ void Level::displayMap(string reset_colour)
 
 void Level::updateMovement(char input)
 {
-	displayedSector[get<0>(playerCoords)][get<1>(playerCoords)] = playerTilePrev;
+	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = playerTilePrev;
 
-	tuple<int, int> mapSize = make_tuple(10, 16);
+	tuple<int, int> mapSize = make_tuple(16, 10);
 
 	tuple<int, int> newCoords = playerCoords;
-	if (input == 'w') { --get<0>(newCoords); }
-	else if (input == 's') { ++get<0>(newCoords); }
-	else if (input == 'a') { --get<1>(newCoords); }
-	else if (input == 'd') { ++get<1>(newCoords); }
+	if (input == 'w') { --get<1>(newCoords); }
+	else if (input == 's') { ++get<1>(newCoords); }
+	else if (input == 'a') { --get<0>(newCoords); }
+	else if (input == 'd') { ++get<0>(newCoords); }
 
-	if (get<0>(newCoords) >= 0 && get<1>(newCoords) >= 0) {
-		if (get<0>(newCoords) < get<0>(mapSize) && get<1>(newCoords) < get<1>(mapSize)) {
-			if (displayedSector[get<0>(newCoords)][get<1>(newCoords)] == OPEN_TILE) {
-				get<0>(playerCoords) = get<0>(newCoords);
-				get<1>(playerCoords) = get<1>(newCoords);
-			}
-			//else { loadNewSector(); }
+	if (get<0>(newCoords) >= 0 && get<1>(newCoords) >= 0 && get<0>(newCoords) < get<0>(mapSize) && get<1>(newCoords) < get<1>(mapSize)) {
+		if (displayedSector[get<1>(newCoords)][get<0>(newCoords)] == OPEN_TILE) {
+			get<0>(playerCoords) = get<0>(newCoords);
+			get<1>(playerCoords) = get<1>(newCoords);
 		}
-		//else { loadNewSector(); }
+	}
+	else {
+		loadNewSector(newCoords);
 	}
 }
 
@@ -259,11 +289,6 @@ void Level::getPlayerInput()
 		else if (input == 'e') {
 			clearScreen();
 			mapSelected = false;
-			break;
-		}
-		else if (input == 'p') {
-			clearScreen();
-			loadNewSector();
 			break;
 		}
 	}
