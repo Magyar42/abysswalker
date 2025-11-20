@@ -3,10 +3,10 @@ using namespace std;
 
 class Enemy
 {
-private:
 public:
-	Enemy(string type);
+    string enemyType, icon;
+    string HP, ATK, DEF, SPD;
 
-	string enemyType;
+    Enemy(string type);
 };
 

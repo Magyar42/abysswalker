@@ -22,6 +22,7 @@ extern vector<vector<string>>  qPressInfo;
 extern map<string, map<string, string>> keepsakesMap;
 extern map<string, map<string, string>> oldSoulsMap;
 extern map<string, map<string, string>> regionsMap;
+extern map<string, map<string, string>> enemiesMap;
 extern vector<string> keepsakesVector;
 extern vector<string> oldSoulsVector;
 extern vector<string> regionsVector;

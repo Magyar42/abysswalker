@@ -33,6 +33,7 @@ Level::Level(string area, string keepsake, string oldSoul)
 	vector<mapSector> levelSectors;
 
 	initWorldMap();
+	initEnemies();
 	currentBoss = selectBoss(setArea, currentAreaDay);
 	playerSetup();
 }
@@ -91,6 +92,39 @@ void Level::initWorldMap()
 	}
 }
 
+void Level::initEnemies()
+{
+	int selectionIndex = 0;
+	bool endDisplayList = false;
+	string selectedItem = "";
+
+	while (true) {
+		string currentLine = "";
+		string currentItem = "";
+		vector<string> displayList = {};
+		vector<string> fullList = {};
+
+		ifstream file("enemies.json");
+		while (getline(file, currentLine)) {
+			if (currentLine.empty()) continue;
+
+			if (currentLine.find("[") != string::npos) {
+				currentItem = currentLine.substr(1, currentLine.length() - 2);
+				fullList.push_back(currentItem);
+			}
+
+			else if (currentItem != "" && currentLine.find(":") != string::npos) {
+				size_t colonPosition = currentLine.find(":");
+				string key = currentLine.substr(0, colonPosition);
+				string value = currentLine.substr(colonPosition + 2);
+				enemiesMap[currentItem][key] = value;
+			}
+
+		}
+		file.close();
+	}
+}
+
 string Level::selectBoss(string area, int day)
 {
 	string currentBoss = "";
@@ -132,7 +166,6 @@ void Level::assignSectorToMap(tuple<int, int> numSector)
 		if (sector.sectorCoords == numSector) {
 			for (const auto& row : sector.sectorTileRows) {
 				for (char tile : row) {
-					// todo: below crashes when switching to another map, initial loading works
 					if (tile == '0') { displayedSector[rowIndex][tileIndex] = OPEN_TILE; }
 					else { displayedSector[rowIndex][tileIndex] = CLOSED_TILE; }
 					tileIndex++;

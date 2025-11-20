@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		abysswalker_level0.csv = abysswalker_level0.csv
 		abysswalker_level1.csv = abysswalker_level1.csv
+		enemies.json = enemies.json
 		keepsakes.json = keepsakes.json
 		oldsouls.json = oldsouls.json
 		regions.json = regions.json

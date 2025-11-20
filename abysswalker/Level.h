@@ -32,6 +32,7 @@ private:
 	};
 
 	void initWorldMap();
+	void initEnemies();
 	string selectBoss(string area, int day);
 	void displayMap(string reset_colour);
 	void playerSetup();
