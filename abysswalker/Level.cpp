@@ -31,9 +31,11 @@ Level::Level(string area, string keepsake, string oldSoul)
 	playerTilePrev = "";
 
 	vector<mapSector> levelSectors;
+	vector<Enemy> currentSectorEnemies;
+	vector<Enemy> allSectorEnemies;
 
-	initWorldMap();
 	initEnemies();
+	initWorldMap();
 	currentBoss = selectBoss(setArea, currentAreaDay);
 	playerSetup();
 }
@@ -83,6 +85,8 @@ void Level::initWorldMap()
 		levelSectors.back().sectorTileRows = resultVector;
 		levelSectors.back().sectorCoords = make_tuple(sectorX, sectorY);
 
+		setEnemies(levelSectors.back());
+
 		sectorX++;
 		if (sectorPerRowCounter >= numSectorsPerRow) {
 			sectorPerRowCounter = 0;
@@ -92,37 +96,63 @@ void Level::initWorldMap()
 	}
 }
 
+void Level::setEnemies(mapSector sector)
+{
+	int enemySpawnLimit = 4;
+	int numEnemiesToSpawn = rand() % (enemySpawnLimit + 1);
+
+	for (int i = 0; i < numEnemiesToSpawn; i++) {
+		int enemyTypeIndex = rand() % enemiesVector.size();
+		
+		while (true) {
+			int spawnX = rand() % sector.sectorTileRows[0].length();
+			int spawnY = rand() % sector.sectorTileRows.size();
+
+			if (sector.sectorTileRows[spawnY][spawnX] == '0') {
+				tuple<int, int> enemyPosInSector = make_tuple(spawnX, spawnY);
+				allSectorEnemies.emplace_back(enemiesVector[enemyTypeIndex], sector.sectorCoords, enemyPosInSector);
+				//cout << allSectorEnemies.back().enemyName << " spawned in sector (" << get<0>(sector.sectorCoords) << ", " << get<1>(sector.sectorCoords) << ") at coordinate (" << get<0>(allSectorEnemies.back().mapPos) << ", " << get<1>(allSectorEnemies.back().mapPos) << ")\n";
+				break;
+			}
+		}
+	}
+}
+
+void Level::loadSectorEnemies()
+{
+	currentSectorEnemies.clear();
+	for (const auto& enemy : allSectorEnemies) {
+		if (enemy.sectorPos == mapSectorCoords) {
+			currentSectorEnemies.push_back(enemy);
+		}
+	}
+}
+
 void Level::initEnemies()
 {
-	int selectionIndex = 0;
-	bool endDisplayList = false;
-	string selectedItem = "";
+	string currentLine = "";
+	string currentItem = "";
+	vector<string> displayList = {};
+	vector<string> fullList = {};
 
-	while (true) {
-		string currentLine = "";
-		string currentItem = "";
-		vector<string> displayList = {};
-		vector<string> fullList = {};
+	ifstream file("enemies.json");
+	while (getline(file, currentLine)) {
+		if (currentLine.empty()) continue;
 
-		ifstream file("enemies.json");
-		while (getline(file, currentLine)) {
-			if (currentLine.empty()) continue;
-
-			if (currentLine.find("[") != string::npos) {
-				currentItem = currentLine.substr(1, currentLine.length() - 2);
-				fullList.push_back(currentItem);
-			}
-
-			else if (currentItem != "" && currentLine.find(":") != string::npos) {
-				size_t colonPosition = currentLine.find(":");
-				string key = currentLine.substr(0, colonPosition);
-				string value = currentLine.substr(colonPosition + 2);
-				enemiesMap[currentItem][key] = value;
-			}
-
+		if (currentLine.find("[") != string::npos) {
+			currentItem = currentLine.substr(1, currentLine.length() - 2);
+			fullList.push_back(currentItem);
 		}
-		file.close();
+
+		else if (currentItem != "" && currentLine.find(":") != string::npos) {
+			size_t colonPosition = currentLine.find(":");
+			string key = currentLine.substr(0, colonPosition);
+			string value = currentLine.substr(colonPosition + 2);
+			enemiesMap[currentItem][key] = value;
+		}
+
 	}
+	file.close();
 }
 
 string Level::selectBoss(string area, int day)
@@ -175,6 +205,8 @@ void Level::assignSectorToMap(tuple<int, int> numSector)
 			}
 		}
 	}
+
+	loadSectorEnemies();
 	
 }
 
@@ -210,6 +242,8 @@ void Level::loadNewSector(tuple<int, int> coords)
 	int newCoordY = get<1>(mapSectorCoords) + yOffsetSector;
 	mapSectorCoords = make_tuple(newCoordX, newCoordY);
 	playerCoords = make_tuple(charPosX, charPosY);
+
+	// loadSectorEnemies();
 }
 
 void Level::displayMap(string reset_colour)
@@ -218,6 +252,14 @@ void Level::displayMap(string reset_colour)
 
 	playerTilePrev = displayedSector[get<1>(playerCoords)][get<0>(playerCoords)];
 	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+
+	for (auto& enemy : currentSectorEnemies) {
+		enemy.updateMovement(displayedSector);
+		int enemyX = get<0>(enemy.mapPos);
+		int enemyY = get<1>(enemy.mapPos);
+		cout << "Enemy " << enemy.enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
+		displayedSector[enemyY][enemyX] = colourText(enemy.icon, RED, reset_colour);
+	}
 
 	for (const auto& row : displayedSector) {
 		cout << " ";

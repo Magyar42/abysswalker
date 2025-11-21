@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include "Enemy.h"
 using namespace std;
 
 class Level
@@ -30,6 +31,8 @@ private:
 		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
 		{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
 	};
+	vector<Enemy> currentSectorEnemies;
+	vector<Enemy> allSectorEnemies;
 
 	void initWorldMap();
 	void initEnemies();
@@ -44,6 +47,8 @@ private:
 	void getPlayerInput();
 	void assignSectorToMap(tuple<int, int> numSector);
 	void loadNewSector(tuple<int, int> coords);
+	void setEnemies(mapSector);
+	void loadSectorEnemies();
 public:
 	Level(string area, string keepsake, string oldSoul);
 

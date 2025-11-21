@@ -26,6 +26,7 @@ extern map<string, map<string, string>> enemiesMap;
 extern vector<string> keepsakesVector;
 extern vector<string> oldSoulsVector;
 extern vector<string> regionsVector;
+extern vector<string> enemiesVector;
 
 string colourText(const string& text, const string& colour, const string& reset = RESET);
 string getStats(string HP, string ATK, string DEF, string SPD);

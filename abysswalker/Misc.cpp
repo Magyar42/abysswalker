@@ -29,6 +29,7 @@ const string CLOSED_TILE = "NNN";
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
 vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon"};
 vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm of the Abyss" };
+vector<string> enemiesVector = { "Hollow Warrior", "Balder Knight", "Demonic Foliage", "Living Mushroom", "Knight of Stone", "Crystal Golem", "Black Knight" };
 map<string, map<string, string>> keepsakesMap = {};
 map<string, map<string, string>> oldSoulsMap = {};
 map<string, map<string, string>> regionsMap = {};

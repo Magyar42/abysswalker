@@ -3,46 +3,46 @@ HP: 3
 ATK: 1
 DEF: 0
 SPD: 2
-map_icon: w
+map_icon: W
 
 [Balder Knight]
 HP: 3
 ATK: 2
 DEF: 2
 SPD: 1
-map_icon: k
+map_icon: K
 
 [Demonic Foliage]
 HP: 5
 ATK: 1
 DEF: 0
 SPD: 3
-map_icon: f
+map_icon: F
 
 [Living Mushroom]
 HP: 4
 ATK: 2
 DEF: 2
 SPD: 2
-map_icon: m
+map_icon: M
 
-[Stone Warrior]
+[Knight of Stone]
 HP: 1
 ATK: 3
 DEF: 7
 SPD: 0
-map_icon: s
+map_icon: S
 
 [Crystal Golem]
 HP: 3
 ATK: 2
 DEF: 4
 SPD: 1
-map_icon: g
+map_icon: G
 
 [Black Knight]
 HP: 5
 ATK: 4
 DEF: 4
 SPD: 2
-map_icon: b
+map_icon: B
