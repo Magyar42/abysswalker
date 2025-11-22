@@ -1,6 +1,7 @@
 #include "Level.h"
 #include "Misc.h"
 #include "List.h"
+#include "Battle.h"
 #include <tuple>
 #include <conio.h>
 #include <iostream>
@@ -29,10 +30,6 @@ Level::Level(string area, string keepsake, string oldSoul)
 	playerWeapon = "None";
 	playerInventory = { "Empty", "Empty", "Empty", "Empty" };
 	playerTilePrev = "";
-
-	vector<mapSector> levelSectors;
-	vector<Enemy> currentSectorEnemies;
-	vector<Enemy> allSectorEnemies;
 
 	initEnemies();
 	initWorldMap();
@@ -103,15 +100,15 @@ void Level::setEnemies(mapSector sector)
 
 	for (int i = 0; i < numEnemiesToSpawn; i++) {
 		int enemyTypeIndex = rand() % enemiesVector.size();
-		
+
 		while (true) {
 			int spawnX = rand() % sector.sectorTileRows[0].length();
 			int spawnY = rand() % sector.sectorTileRows.size();
 
 			if (sector.sectorTileRows[spawnY][spawnX] == '0') {
 				tuple<int, int> enemyPosInSector = make_tuple(spawnX, spawnY);
-				allSectorEnemies.emplace_back(enemiesVector[enemyTypeIndex], sector.sectorCoords, enemyPosInSector);
-				//cout << allSectorEnemies.back().enemyName << " spawned in sector (" << get<0>(sector.sectorCoords) << ", " << get<1>(sector.sectorCoords) << ") at coordinate (" << get<0>(allSectorEnemies.back().mapPos) << ", " << get<1>(allSectorEnemies.back().mapPos) << ")\n";
+				// create a new Enemy on the heap and store the unique_ptr
+				allSectorEnemies.emplace_back(make_unique<Enemy>(enemiesVector[enemyTypeIndex], sector.sectorCoords, enemyPosInSector));
 				break;
 			}
 		}
@@ -121,9 +118,9 @@ void Level::setEnemies(mapSector sector)
 void Level::loadSectorEnemies()
 {
 	currentSectorEnemies.clear();
-	for (const auto& enemy : allSectorEnemies) {
-		if (enemy.sectorPos == mapSectorCoords) {
-			currentSectorEnemies.push_back(enemy);
+	for (const auto& uptr : allSectorEnemies) {
+		if (uptr->sectorPos == mapSectorCoords) {
+			currentSectorEnemies.push_back(uptr.get());
 		}
 	}
 }
@@ -253,12 +250,13 @@ void Level::displayMap(string reset_colour)
 	playerTilePrev = displayedSector[get<1>(playerCoords)][get<0>(playerCoords)];
 	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
 
-	for (auto& enemy : currentSectorEnemies) {
-		enemy.updateMovement(displayedSector);
-		int enemyX = get<0>(enemy.mapPos);
-		int enemyY = get<1>(enemy.mapPos);
-		cout << "Enemy " << enemy.enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
-		displayedSector[enemyY][enemyX] = colourText(enemy.icon, RED, reset_colour);
+	// Enemy Movement — now using pointers (non-owning) that refer into allSectorEnemies
+	for (auto* enemy : currentSectorEnemies) {
+		enemy->updateMovement(displayedSector);
+		int enemyX = get<0>(enemy->mapPos);
+		int enemyY = get<1>(enemy->mapPos);
+		cout << "Enemy " << enemy->enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
+		displayedSector[enemyY][enemyX] = colourText(enemy->icon, RED, reset_colour);
 	}
 
 	for (const auto& row : displayedSector) {
@@ -346,6 +344,10 @@ vector<string> Level::initInvDisplay()
 
 void Level::getPlayerInput()
 {
+	string reset_colour = "";
+	if (mapSelected) { reset_colour = INACTIVE; }
+	else { reset_colour = RESET; }
+
 	while (mapSelected) {
 		char input = _getch();
 		if (input == 'q') {
@@ -361,7 +363,20 @@ void Level::getPlayerInput()
 			mapSelected = false;
 			break;
 		}
+		else if (input == 'p') { //todo: debug
+			clearScreen();
+			startCombat();
+			break;
+		}
 	}
+}
+
+void Level::startCombat()
+{
+	Battle battleInstance(playerHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
+	battleInstance.startBattle(*currentSectorEnemies[0]);
+	_getch();
+	clearScreen();
 }
 
 void Level::display()

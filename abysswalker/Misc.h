@@ -13,6 +13,8 @@ extern const string GREEN;
 extern const string YELLOW;
 extern const string BLUE;
 
+extern const int DELAY_TIME;
+
 extern const string PLAYER_TILE;
 extern const string OPEN_TILE;
 extern const string CLOSED_TILE;
@@ -30,6 +32,7 @@ extern vector<string> enemiesVector;
 
 string colourText(const string& text, const string& colour, const string& reset = RESET);
 string getStats(string HP, string ATK, string DEF, string SPD);
+string getStatsBattle(string HP, string maxHP, string ATK, string DEF, string SPD);
 void clearScreen();
 void displayTitle();
 void qPressCheck(string currentSelection);

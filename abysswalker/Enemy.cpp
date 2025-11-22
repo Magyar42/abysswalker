@@ -15,29 +15,46 @@ Enemy::Enemy(string type, tuple<int, int> sector, tuple<int, int> pos)
 	DEF = enemiesMap[enemyName]["DEF"];
 	SPD = enemiesMap[enemyName]["SPD"];
 	icon = "<" + enemiesMap[enemyName]["map_icon"] + ">";
+	ability = enemiesMap[enemyName]["ability"];
 }
 
-void Enemy::updateMovement(vector<vector<string>> sector)
+void Enemy::updateMovement(const vector<vector<string>>& sector)
 {
-	// todo: prevent enemy from moving into walls or off map
-	// also, prevent enemies from overlapping
-	// to fix: enemies seem to only be moving around their initial position, as if the function is using their initial position as a reference rather than their current position
-	mapPosPrev = mapPos;
-	cout << sector[get<1>(mapPos)][get<0>(mapPos)] << " -> ";
-	int movementChance = rand() % 100;
-	if (movementChance < 50) { // todo: adjust chance based on enemy type
-		int direction = rand() % 4;
-		if (direction == 0) { 
-			get<1>(mapPos) -= 1;
-		}
-		else if (direction == 1) {
-			get<1>(mapPos) += 1;
-		}
-		else if (direction == 2) {
-			get<0>(mapPos) -= 1;
-		}
-		else if (direction == 3) {
-			get<0>(mapPos) += 1;
-		}
-	}
+    tuple<int, int> newPos = mapPos;
+    mapPosPrev = mapPos;
+    int movementChance = rand() % 100;
+
+    // todo: fix enemies wrongly believing some tiles are closed/open when they are not
+    if (movementChance < 50) {
+        int attempts = 0;
+        const int maxAttempts = 10;
+
+        while (attempts++ < maxAttempts) {
+            int direction = rand() % 4;
+            if (direction == 0) get<1>(newPos) -= 1; // left
+            else if (direction == 1) get<1>(newPos) += 1; // right
+            else if (direction == 2) get<0>(newPos) -= 1; // up
+            else if (direction == 3) get<0>(newPos) += 1; // down
+
+            int row = get<0>(newPos);
+            int column = get<1>(newPos);
+
+            // Bounds check before indexing
+            if (row < 0 || column < 0 || row >= static_cast<int>(sector.size()) ||
+                column >= static_cast<int>(sector[row].size())) {
+                cout << "Enemy " << enemyName << " tried to move to closed tile at (" << get<0>(newPos) << ", " << get<1>(newPos) << ")\n";
+                newPos = mapPos;
+                continue;
+            }
+
+            if (sector[row][column] == CLOSED_TILE) {
+                cout << "Enemy " << enemyName << " tried to move to closed tile at (" << get<0>(newPos) << ", " << get<1>(newPos) << ")\n";
+                newPos = mapPos;
+                continue;
+            }
+
+            mapPos = newPos;
+            break;
+        }
+    }
 }

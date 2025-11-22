@@ -4,6 +4,7 @@ ATK: 1
 DEF: 0
 SPD: 2
 map_icon: W
+ability: +2 SPD while you have any DEF.
 
 [Balder Knight]
 HP: 3
@@ -11,6 +12,7 @@ ATK: 2
 DEF: 2
 SPD: 1
 map_icon: K
+ability: +2 ATK while you have 7 or less HP.
 
 [Demonic Foliage]
 HP: 5
@@ -18,6 +20,7 @@ ATK: 1
 DEF: 0
 SPD: 3
 map_icon: F
+ability: Battle Start: if enemy has more SPD than you, it deals 3 damage.
 
 [Living Mushroom]
 HP: 4
@@ -25,13 +28,15 @@ ATK: 2
 DEF: 2
 SPD: 2
 map_icon: M
+ability: Every other turn, enemy gains +2 HP on hit.
 
 [Knight of Stone]
-HP: 1
-ATK: 3
-DEF: 7
+HP: 2
+ATK: 0
+DEF: 8
 SPD: 0
 map_icon: S
+ability: +1 ATK every turn.
 
 [Crystal Golem]
 HP: 3
@@ -39,10 +44,12 @@ ATK: 2
 DEF: 4
 SPD: 1
 map_icon: G
+ability: On hit, enemy steals 100 Souls.
 
 [Black Knight]
 HP: 5
-ATK: 4
+ATK: 1
 DEF: 4
 SPD: 2
 map_icon: B
+ability: Battle Start: enemy gains ATK equal to yours.

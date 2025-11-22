@@ -25,6 +25,8 @@ const string PLAYER_TILE = " A ";
 const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
 
+const int DELAY_TIME = 1000;
+
 // Structs
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
 vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon"};
@@ -85,7 +87,12 @@ string colourText(const string& text, const string& colour, const string& reset)
 
 string getStats(string HP, string ATK, string DEF, string SPD)
 {
-    return colourText(" HP:", GREEN) + " " + HP + " | " + colourText("ATK:", RED) + " " + ATK + " | " + colourText("DEF : ", BLUE) + " " + DEF + " | " + colourText("SPD : ", YELLOW) + SPD;
+    return colourText(" HP:", GREEN) + " " + HP + " | " + colourText("ATK:", RED) + " " + ATK + " | " + colourText("DEF: ", BLUE) + " " + DEF + " | " + colourText("SPD: ", YELLOW) + SPD;
+}
+
+string getStatsBattle(string HP, string maxHP, string ATK, string DEF, string SPD)
+{
+    return colourText(" HP:", GREEN) + " " + HP + "/" + maxHP + " | " + colourText("ATK:", RED) + " " + ATK + " | " + colourText("DEF: ", BLUE) + " " + DEF + " | " + colourText("SPD: ", YELLOW) + SPD;
 }
 
 void clearScreen()
