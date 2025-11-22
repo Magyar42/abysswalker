@@ -22,16 +22,130 @@ Battle::Battle(int hp, int atk, int def, int spd, vector<string> inv, string wpn
 	enemySPD = 0;
 	enemyAbility = "";
 	enemyMaxHP = 10;
+
+	playerExposed = false;
+	enemyExposed = false;
+	playerWounded = false;
+	enemyWounded = false;
+
+	playerWon = false;
+	battleOver = false;
+}
+
+void Battle::playerAttack()
+{
+	cout << "\n\n You attack...";
+	pauseBattle(DELAY_TIME);
+
+	int damageDealtToDEF = playerATK;
+	int damageDealtToHP = 0;
+	if (damageDealtToDEF < 1) { damageDealtToDEF = 1; }
+
+	enemyDEF -= damageDealtToDEF;
+	if (enemyDEF < 0) {
+		damageDealtToHP = abs(enemyDEF);
+		enemyDEF = 0;
+		enemyHP -= damageDealtToHP;
+		damageDealtToDEF -= damageDealtToHP;
+	}
+	if (enemyHP < 0) { enemyHP = 0; }
+
+	clearScreen();
+	displayTitle();
+	displayBattleInfo();
+
+	cout << " You attack, dealing " << colourText(to_string(damageDealtToHP+damageDealtToDEF), RED) << " damage!\n";
+	pauseBattle(DELAY_TIME_SHORT);
+
+	if (damageDealtToDEF > 0) {
+		cout << "\n Enemy "<< colourText("DEF:", BLUE) << " -" << damageDealtToDEF;
+		pauseBattle(DELAY_TIME_SHORT);
+
+		if (enemyDEF == 0 && !enemyExposed) {
+			cout << "\n Enemy is exposed! \n";
+			enemyExposed = true;
+			pauseBattle(DELAY_TIME_SHORT);
+		}
+	}
+	if (damageDealtToHP > 0) {
+		cout << "\n Enemy " << colourText("HP:", GREEN) << " -" << damageDealtToHP;
+		pauseBattle(DELAY_TIME_SHORT);
+
+		if (enemyHP <= (enemyMaxHP / 2) && !enemyWounded) {
+			cout << "\n Enemy is wounded! \n";
+			enemyWounded = true;
+			pauseBattle(DELAY_TIME_SHORT);
+		}
+	}
+	if (enemyHP == 0) {
+		cout << "\n\n Victory!";
+		playerWon = true;
+		battleOver = true;
+		pauseBattle(DELAY_TIME);
+	}
+}
+
+void Battle::enemyAttack()
+{
+	cout << "\n The enemy attacks...";
+	pauseBattle(DELAY_TIME);
+
+	int damageDealtToDEF = enemyATK;
+	int damageDealtToHP = 0;
+	if (damageDealtToDEF < 1) { damageDealtToDEF = 1; }
+
+	playerDEF -= damageDealtToDEF;
+	if (playerDEF < 0) {
+		damageDealtToHP = abs(playerDEF);
+		playerDEF = 0;
+		playerHP -= damageDealtToHP;
+		damageDealtToDEF -= damageDealtToHP;
+	}
+	if (playerHP < 0) { playerHP = 0; }
+
+	clearScreen();
+	displayTitle();
+	displayBattleInfo();
+
+	cout << " The enemy attacks, dealing " << colourText(to_string(damageDealtToHP + damageDealtToDEF), RED) << " damage!\n";
+	pauseBattle(DELAY_TIME_SHORT);
+
+	if (damageDealtToDEF > 0) {
+		cout << "\n Your " << colourText("DEF:", BLUE) << " -" << damageDealtToDEF;
+		pauseBattle(DELAY_TIME_SHORT);
+
+		if (playerDEF == 0 && !playerExposed) {
+			cout << "\n You are exposed! \n";
+			playerExposed = true;
+			pauseBattle(DELAY_TIME_SHORT);
+		}
+	}
+	if (damageDealtToHP > 0) {
+		cout << "\n Your " << colourText("HP:", GREEN) << " -" << damageDealtToHP;
+		pauseBattle(DELAY_TIME_SHORT);
+
+		if (playerHP <= (playerMaxHP / 2) && !playerWounded) {
+			cout << "\n You are wounded! \n";
+			playerWounded = true;
+			pauseBattle(DELAY_TIME_SHORT);
+		}
+	}
+	if (playerHP == 0) {
+		cout << "\n\n You lost!";
+		playerWon = false;
+		battleOver = true;
+		pauseBattle(DELAY_TIME);
+	}
 }
 
 void Battle::displayBattleInfo()
 {
-	cout << colourText(" [Player Stats] ", BLUE) << "\n";
+	cout << colourText(" [Player] ", BLUE) << "\n";
 	cout << getStatsBattle(to_string(playerHP), to_string(playerMaxHP), to_string(playerATK), to_string(playerDEF), to_string(playerSPD)) << "\n\n";
 
-	cout << colourText(" [Enemy Stats] ", RED) << "\n";
+	cout << colourText(" [Enemy] ", RED) << "\n";
 	cout << getStatsBattle(to_string(enemyHP), to_string(enemyMaxHP), to_string(enemyATK), to_string(enemyDEF), to_string(enemySPD)) << "\n";
-	cout << " [INFO]: " << enemyAbility << "\n";
+	cout << " [ABILITY]: " << enemyAbility << "\n";
 
 	cout << textSeparator;
 }
@@ -56,5 +170,29 @@ void Battle::startBattle(Enemy enemyType)
 
 	cout << " A " << colourText(enemyType.enemyName, RED) << " blocks your path!";
 	pauseBattle(DELAY_TIME);
-	cout << "\n\n Battle Start!\n";
+
+	if (playerSPD >= enemySPD) {
+		while (!battleOver) {
+			playerAttack();
+			if (enemyHP <= 0) break;
+			enemyAttack();
+		}
+	}
+	else {
+		while (!battleOver) {
+			enemyAttack();
+			if (playerHP <= 0) break;
+			playerAttack();
+		}
+	}
+
+	if (battleOver && playerWon) {
+		cout << "\n You gained +100 Souls.";
+	}
+	else if (battleOver && !playerWon) {
+		cout << "\n You were defeated by the " << colourText(enemyType.enemyName, RED) << "...\n";
+	}
+
+	pauseBattle(DELAY_TIME_SHORT);
+	cout << "\n\n Press any key to continue...";
 }

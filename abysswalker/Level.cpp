@@ -21,6 +21,7 @@ Level::Level(string area, string keepsake, string oldSoul)
 	currentAreaTime = "9:00";
 	gameStarted = false;
 	mapSelected = true;
+	endGame = 0;
 	playerCoords = make_tuple(1, 1); // todo: add random spawning
 	mapSectorCoords = make_tuple(0, 0);
 	playerHP = 10;
@@ -174,9 +175,9 @@ string Level::selectBoss(string area, int day)
 void Level::playerSetup()
 {
 	if (setOldSoul == "Soul of the Wolf Knight") {
-		playerHP = 10;
+		playerHP = 2;
 		playerATK = 4;
-		playerDEF = 5;
+		playerDEF = 0;
 		playerSPD = 1;
 		playerWeapon = "Greatsword";
 	}
@@ -376,7 +377,12 @@ void Level::startCombat()
 	Battle battleInstance(playerHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
 	battleInstance.startBattle(*currentSectorEnemies[0]);
 	_getch();
-	clearScreen();
+
+	if (!battleInstance.playerWon) {
+		endGame = 1;
+	}
+
+	// todo: update player stats after battle, and remove defeated enemy from level
 }
 
 void Level::display()
@@ -398,5 +404,10 @@ void Level::display()
 		else { displayInventory(playerInvDisplay); }
 
 		getPlayerInput();
+
+		if (endGame==1) {
+			clearScreen();
+			break;
+		}
 	}
 }

@@ -14,6 +14,29 @@ const string titleDisplay[6] = {
 "\\____|__  /___  / ____/____  >____  >  \\/\\_/  (____  /____/__|_ \\\\___  >__|",
 "        \\/    \\/\\/         \\/     \\/               \\/          \\/    \\/       "
 };
+const string lossDisplay[9] = {
+    " __      __  ______   __    __        _______   ______  ________  _______  ",
+    "/  \\    /  |/      \\ /  |  /  |      /       \\ /      |/        |/       \\ ",
+    "$$  \\  /$$//$$$$$$  |$$ |  $$ |      $$$$$$$  |$$$$$$/ $$$$$$$$/ $$$$$$$  |",
+    " $$  \\/$$/ $$ |  $$ |$$ |  $$ |      $$ |  $$ |  $$ |  $$ |__    $$ |  $$ |",
+    "  $$  $$/  $$ |  $$ |$$ |  $$ |      $$ |  $$ |  $$ |  $$    |   $$ |  $$ |",
+    "   $$$$/   $$ |  $$ |$$ |  $$ |      $$ |  $$ |  $$ |  $$$$$/    $$ |  $$ |",
+    "    $$ |   $$ \\__$$ |$$ \\__$$ |      $$ |__$$ | _$$ |_ $$ |_____ $$ |__$$ |",
+    "    $$ |   $$    $$/ $$    $$/       $$    $$/ / $$   |$$       |$$    $$/ ",
+    "    $$/     $$$$$$/   $$$$$$/        $$$$$$$/  $$$$$$/ $$$$$$$$/ $$$$$$$/  "
+};
+const string winDisplay[9] = {
+    " __     __  ______   ______   ________  ______   _______   __      __ ",
+    "/  |   /  |/      | /      \\ /        |/      \\ /       \\ /  \\    /  |",
+    "$$ |   $$ |$$$$$$/ /$$$$$$  |$$$$$$$$//$$$$$$  |$$$$$$$  |$$  \\  /$$/ ",
+    "$$ |   $$ |  $$ |  $$ |  $$/    $$ |  $$ |  $$ |$$ |__$$ | $$  \\/$$/  ",
+    "$$  \\ /$$/   $$ |  $$ |         $$ |  $$ |  $$ |$$    $$<   $$  $$/   ",
+    " $$  /$$/    $$ |  $$ |   __    $$ |  $$ |  $$ |$$$$$$$  |   $$$$/    ",
+    "  $$ $$/    _$$ |_ $$ \\__/  |   $$ |  $$ \\__$$ |$$ |  $$ |    $$ |    ",
+    "   $$$/    / $$   |$$    $$/    $$ |  $$    $$/ $$ |  $$ |    $$ |    ",
+    "    $/     $$$$$$/  $$$$$$/     $$/    $$$$$$/  $$/   $$/     $$/     "
+};
+
 const string RESET = "\033[0m";
 const string INACTIVE = "\033[0;90m";
 const string RED = "\033[0;31m";
@@ -25,7 +48,8 @@ const string PLAYER_TILE = " A ";
 const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
 
-const int DELAY_TIME = 1000;
+const int DELAY_TIME = 750;
+const int DELAY_TIME_SHORT = 250;
 
 // Structs
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
@@ -110,6 +134,20 @@ void displayTitle()
         cout << titleLine << "\n";
     }
     cout << textSeparator;
+}
+
+void displayEndscreen(bool victory)
+{
+    if (!victory) {
+        for (string lossLine : lossDisplay) {
+            cout << colourText(lossLine, RED) << "\n";
+        }
+    }
+    else {
+        for (string winLine : winDisplay) {
+            cout << colourText(winLine, YELLOW) << "\n";
+        }
+    }
 }
 
 void qPressCheck(string currentSelection)

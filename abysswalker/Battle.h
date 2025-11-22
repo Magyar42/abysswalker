@@ -11,12 +11,15 @@ private:
 	int enemyHP, enemyATK, enemyDEF, enemySPD, enemyMaxHP;
 	vector<string> playerInv;
 	string playerWpn, enemyAbility;
+	bool battleOver, playerExposed, enemyExposed, playerWounded, enemyWounded;
 
 	void playerAttack();
 	void enemyAttack();
 	void displayBattleInfo();
 	void pauseBattle(int milliseconds);
 public:
+	bool playerWon;
+
 	explicit Battle(int hp, int atk, int def, int spd, vector<string> inv, string wpn);
 	void startBattle(Enemy enemyType);
 };

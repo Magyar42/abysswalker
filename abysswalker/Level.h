@@ -58,6 +58,7 @@ public:
     Level(string area, string keepsake, string oldSoul);
 
     int playerHP, playerATK, playerDEF, playerSPD;
+    int endGame;
     string playerWeapon;
     vector<string> playerInventory;
 
