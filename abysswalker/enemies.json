@@ -53,3 +53,11 @@ DEF: 4
 SPD: 2
 map_icon: B
 ability: Battle Start: enemy gains ATK equal to yours.
+
+[Titanite Demon]
+HP: 7
+ATK: 2
+DEF: 7
+SPD: 3
+map_icon: B
+ability: Every other attack has a 50% chance of inflicting Stun.

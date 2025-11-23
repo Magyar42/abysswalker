@@ -48,8 +48,12 @@ const string PLAYER_TILE = " A ";
 const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
 
-const int DELAY_TIME = 750;
-const int DELAY_TIME_SHORT = 250;
+const int DELAY_TIME = 800;
+const int DELAY_TIME_SHORT = 400;
+const int charMovementPerTimeCounter = 2;
+const int bossEncounterDays[3] = { 3, 6, 9 };
+
+const string timesOfDay[7] = { "Dawn", "Morning", "Midday", "Afternoon", "Dusk", "Evening", "Night" };
 
 // Structs
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
@@ -99,7 +103,7 @@ vector<vector<string>>  qPressInfo = {
     "The Witch of Izalith inherited the Soul of Life, and her daughters bear her legacy. Pyromancy comes naturally from Chaos.",
     "Seath the Scaleless was born lacking the stone scales of his brethren. Turning to forbidden sorceries for a solution, he descended into madness.",
     "Gwyndolin was the third child of Lord Gwyn. Hidden from public view, he lead the Blades of the Darkmoon to dispense justice across Lordran.",
-    "Titanite Demon: " + getStats("5", "4", "15", "1") + " \n When losing all its " + colourText("DEF", BLUE) + ", Titanite Demon loses 2 " + colourText("ATK", RED) + "."}
+    "Titanite Demon: " + getStats("7", "2", "7", "3") + " \n Every other attack has a 50% chance of inflicting Stun."}
 };
 
 // Misc Functions

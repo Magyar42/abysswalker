@@ -5,6 +5,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <conio.h>
 
 Battle::Battle(int hp, int atk, int def, int spd, vector<string> inv, string wpn)
 {
@@ -87,7 +88,7 @@ void Battle::playerAttack()
 
 void Battle::enemyAttack()
 {
-	cout << "\n The enemy attacks...";
+	cout << "\n\n The enemy attacks...";
 	pauseBattle(DELAY_TIME);
 
 	int damageDealtToDEF = enemyATK;
@@ -170,6 +171,8 @@ void Battle::startBattle(Enemy enemyType)
 
 	cout << " A " << colourText(enemyType.enemyName, RED) << " blocks your path!";
 	pauseBattle(DELAY_TIME);
+	cout << "\n\n Press any key to begin the battle...";
+	_getch();
 
 	if (playerSPD >= enemySPD) {
 		while (!battleOver) {

@@ -17,6 +17,10 @@ extern const string BLUE;
 
 extern const int DELAY_TIME;
 extern const int DELAY_TIME_SHORT;
+extern const int charMovementPerTimeCounter;
+extern const int bossEncounterDays[3];
+
+extern const string timesOfDay[7];
 
 extern const string PLAYER_TILE;
 extern const string OPEN_TILE;

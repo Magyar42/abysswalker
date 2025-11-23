@@ -4,6 +4,7 @@
 #include <tuple>
 #include <memory>
 #include "Enemy.h"
+#include "Location.h"
 using namespace std;
 
 class Level
@@ -15,10 +16,10 @@ private:
     };
 
     string setArea, setKeepsake, setOldSoul;
-    string currentAreaDayOrNight, currentAreaTime, currentBoss, playerTilePrev;
-    int currentAreaDay;
+    string currentBoss, playerTilePrev;
+    int currentAreaDay, currentAreaTimeIndex, currentAreaTimeCounter;
     tuple<int, int> playerCoords, mapSectorCoords;
-    bool gameStarted, mapSelected;
+    bool gameStarted, mapSelected, locationActive;
     vector<mapSector> levelSectors;
     vector<vector<string>> displayedSector = {
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
@@ -32,6 +33,8 @@ private:
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
     };
+	// Use a smart pointer so derived types are preserved (no slicing)
+	unique_ptr<Location> currentLocation;
 
     // non-owning pointers to enemies in the current sector
     vector<Enemy*> currentSectorEnemies;
@@ -53,11 +56,15 @@ private:
     void loadNewSector(tuple<int, int> coords);
     void setEnemies(mapSector);
     void loadSectorEnemies();
-	void startCombat();
+	void startCombat(Enemy& enemy);
+	void startBossCombat(string bossName);
+    void checkPlayerLocation();
+	void updateTime();
+    void displayInfoAndInventory();
 public:
     Level(string area, string keepsake, string oldSoul);
 
-    int playerHP, playerATK, playerDEF, playerSPD;
+    int playerHP, playerMaxHP, playerATK, playerDEF, playerSPD, playerSouls;
     int endGame;
     string playerWeapon;
     vector<string> playerInventory;

@@ -2,12 +2,14 @@
 #include "Misc.h"
 #include "List.h"
 #include "Battle.h"
+#include "Location.h"
 #include <tuple>
 #include <conio.h>
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <functional>
 using namespace std;
 
 Level::Level(string area, string keepsake, string oldSoul)
@@ -17,17 +19,22 @@ Level::Level(string area, string keepsake, string oldSoul)
 	setOldSoul = oldSoul;
 
 	currentAreaDay = 1;
-	currentAreaDayOrNight = "Day";
-	currentAreaTime = "9:00";
+	currentAreaTimeIndex = 0;
+	currentAreaTimeCounter = 0;
 	gameStarted = false;
 	mapSelected = true;
+	locationActive = false;
+	// initialize as base Location to avoid null checks later
+	currentLocation = make_unique<Location>();
 	endGame = 0;
 	playerCoords = make_tuple(1, 1); // todo: add random spawning
 	mapSectorCoords = make_tuple(0, 0);
 	playerHP = 10;
+	playerMaxHP = 10;
 	playerATK = 1;
 	playerDEF = 0;
 	playerSPD = 0;
+	playerSouls = 100;
 	playerWeapon = "None";
 	playerInventory = { "Empty", "Empty", "Empty", "Empty" };
 	playerTilePrev = "";
@@ -161,10 +168,10 @@ string Level::selectBoss(string area, int day)
 		case 1:
 			currentBoss = "Titanite Demon";
 			break;
-		case 2:
+		case 4:
 			currentBoss = "Moonlight Butterfly";
 			break;
-		case 3:
+		case 7:
 			currentBoss = "Hydra of the Basin";
 			break;
 		}
@@ -175,8 +182,9 @@ string Level::selectBoss(string area, int day)
 void Level::playerSetup()
 {
 	if (setOldSoul == "Soul of the Wolf Knight") {
-		playerHP = 2;
-		playerATK = 4;
+		playerHP = 10;
+		playerMaxHP = 10;
+		playerATK = 2;
 		playerDEF = 0;
 		playerSPD = 1;
 		playerWeapon = "Greatsword";
@@ -253,7 +261,7 @@ void Level::displayMap(string reset_colour)
 
 	// Enemy Movement — now using pointers (non-owning) that refer into allSectorEnemies
 	for (auto* enemy : currentSectorEnemies) {
-		enemy->updateMovement(displayedSector);
+		// enemy->updateMovement(displayedSector); todo: make enemies move only during night
 		int enemyX = get<0>(enemy->mapPos);
 		int enemyY = get<1>(enemy->mapPos);
 		cout << "Enemy " << enemy->enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
@@ -282,7 +290,7 @@ void Level::updateMovement(char input)
 	else if (input == 'd') { ++get<0>(newCoords); }
 
 	if (get<0>(newCoords) >= 0 && get<1>(newCoords) >= 0 && get<0>(newCoords) < get<0>(mapSize) && get<1>(newCoords) < get<1>(mapSize)) {
-		if (displayedSector[get<1>(newCoords)][get<0>(newCoords)] == OPEN_TILE) {
+		if (displayedSector[get<1>(newCoords)][get<0>(newCoords)] != CLOSED_TILE) {
 			get<0>(playerCoords) = get<0>(newCoords);
 			get<1>(playerCoords) = get<1>(newCoords);
 		}
@@ -290,12 +298,49 @@ void Level::updateMovement(char input)
 	else {
 		loadNewSector(newCoords);
 	}
+
+	updateTime();
+	checkPlayerLocation();
+}
+
+
+
+void Level::checkPlayerLocation()
+{
+	for (auto* enemy : currentSectorEnemies) {
+		int enemyX = get<0>(enemy->mapPos);
+		int enemyY = get<1>(enemy->mapPos);
+
+		if (enemyX == get<0>(playerCoords) && enemyY == get<1>(playerCoords)) {
+			clearScreen();
+			startCombat(*enemy);
+			break;
+		}
+	}
+}
+
+void Level::updateTime()
+{
+	currentAreaTimeCounter++;
+	if (currentAreaTimeCounter >= charMovementPerTimeCounter) {
+		currentAreaTimeCounter = 0;
+		currentAreaTimeIndex++;
+		if (currentAreaTimeIndex >= 7) {
+			if (currentAreaDay % 3 == 0) {
+				clearScreen();
+				startBossCombat(currentBoss);
+			}
+
+			currentAreaTimeIndex = 0;
+			currentAreaDay++;
+		}
+	}
 }
 
 void Level::displayWorld()
 {
 	displayTitle();
-	string dayInfo = currentAreaTime + " [" + currentAreaDayOrNight + " " + to_string(currentAreaDay) + "]";
+	string dayInfo = "Day " + to_string(currentAreaDay) + ", " + timesOfDay[currentAreaTimeIndex];
 	string reset_colour = "";
 
 	if (mapSelected) { reset_colour = RESET; }
@@ -321,7 +366,15 @@ void Level::displayPlayerInfo()
 	if (mapSelected) { reset_colour = INACTIVE; }
 	else { reset_colour = RESET; }
 
-	cout << colourText(" HP: ", GREEN, reset_colour) << playerHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n\n";
+	cout << colourText(" HP: ", GREEN, reset_colour) << playerHP << "/" << playerMaxHP << " | " << colourText("ATK: ", RED, reset_colour) << playerATK << " | " << colourText("DEF: ", BLUE, reset_colour) << playerDEF << " | " << colourText("SPD: ", YELLOW, reset_colour) << playerSPD << "\n";
+	cout << " Souls: " << playerSouls << "\n\n";
+}
+
+void Level::displayInfoAndInventory() // Passed into Location interactStart
+{
+	displayPlayerInfo();
+	vector<string> playerInvDisplay = initInvDisplay();
+	displayInventory(playerInvDisplay);
 }
 
 vector<string> Level::initInvDisplay()
@@ -349,7 +402,21 @@ void Level::getPlayerInput()
 	if (mapSelected) { reset_colour = INACTIVE; }
 	else { reset_colour = RESET; }
 
-	while (mapSelected) {
+	while (locationActive) {
+		char input = _getch();
+		if (input == 'e') {
+			clearScreen();
+			mapSelected = false;
+			break;
+		}
+		else if (input == 'p') {
+			clearScreen();
+			locationActive = false;
+			break;
+		}
+	}
+
+	while (mapSelected && !locationActive) {
 		char input = _getch();
 		if (input == 'q') {
 			qPressCheck(currentBoss);
@@ -364,25 +431,56 @@ void Level::getPlayerInput()
 			mapSelected = false;
 			break;
 		}
-		else if (input == 'p') { //todo: debug
+		else if (input == 'p') { // todo: remove this debug
 			clearScreen();
-			startCombat();
+			locationActive = true;
+			currentLocation = make_unique<Ruins>(make_tuple(1, 2), make_tuple(0, 0));
 			break;
 		}
 	}
 }
 
-void Level::startCombat()
+void Level::startCombat(Enemy& enemy)
 {
 	Battle battleInstance(playerHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
-	battleInstance.startBattle(*currentSectorEnemies[0]);
+	battleInstance.startBattle(enemy);
 	_getch();
 
 	if (!battleInstance.playerWon) {
 		endGame = 1;
 	}
+	else {
+		auto it = remove_if(allSectorEnemies.begin(), allSectorEnemies.end(),
+			[&enemy](const unique_ptr<Enemy>& e) {
+				return e->sectorPos == enemy.sectorPos && e->mapPos == enemy.mapPos;
+			});
+		allSectorEnemies.erase(it, allSectorEnemies.end());
+		loadSectorEnemies();
 
-	// todo: update player stats after battle, and remove defeated enemy from level
+		playerHP = battleInstance.playerHP;
+		playerSouls += 100; // todo: calculate souls based on enemy type
+	}
+}
+
+void Level::startBossCombat(string bossName)
+{
+	Battle battleInstance(playerHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
+	Enemy bossEnemy(bossName, make_tuple(-1, -1), make_tuple(-1, -1));
+	battleInstance.startBattle(bossEnemy);
+	_getch();
+
+	if (!battleInstance.playerWon) {
+		endGame = 1;
+	}
+	else {
+		playerHP = battleInstance.playerHP;
+		playerSouls += 500;
+		currentBoss = selectBoss(setArea, currentAreaDay);
+
+		// Each defeated boss unlocks 2 new inventory slots
+		playerInventory.push_back("Empty");
+		playerInventory.push_back("Empty");
+	}
 }
 
 void Level::display()
@@ -392,18 +490,39 @@ void Level::display()
 	List playerInv("Inventory", playerInvDisplay);
 
 	while (true) {
-		displayWorld();
+		if (!locationActive) {
+			displayWorld();
 
-		displayPlayerInfo();
-		if (!mapSelected) {
-			string returnValue = playerInv.displayItems();
-			if (returnValue == "true") { mapSelected = true; }
-			clearScreen();
-			continue;
+			displayPlayerInfo();
+			if (!mapSelected) {
+				string returnValue = playerInv.displayItems();
+				if (returnValue == "true") { mapSelected = true; }
+				clearScreen();
+				continue;
+			}
+			else { displayInventory(playerInvDisplay); }
+
+			getPlayerInput();
 		}
-		else { displayInventory(playerInvDisplay); }
+		else { 
+			string returnValue = currentLocation->interactStart(mapSelected, bind(&Level::displayInfoAndInventory, this));
 
-		getPlayerInput();
+			if (mapSelected) {
+				if (returnValue == "true") { mapSelected = false; }
+				clearScreen();
+				continue;
+			}
+
+			if (!mapSelected) {
+				displayPlayerInfo();
+				string returnValue = playerInv.displayItems();
+				if (returnValue == "true") { mapSelected = true; }
+				clearScreen();
+				continue;
+			}
+
+			// getPlayerInput();
+		}
 
 		if (endGame==1) {
 			clearScreen();

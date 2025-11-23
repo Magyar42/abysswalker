@@ -18,7 +18,12 @@ List::List(string type, vector<string> list, bool import)
 	listLength = listItems.size();
 }
 
-string List::displayItems()
+List::List()
+	: newlySelectedItem(""), currentSelectedItem(""), listType(""), selectedItemIndex(0), listLength(0), listItems({}), importFromFile(false)
+{
+}
+
+string List::displayItems(function<void()> infoCallback)
 {
 	currentSelectedItem = listItems[selectedItemIndex];
 	for (string item : listItems) {
@@ -29,6 +34,11 @@ string List::displayItems()
 			cout << "   " << item << "\n";
 		}
 	}
+
+    if (infoCallback) {
+		cout << textSeparator;
+        infoCallback();
+    }
 
     while (true) {
         char charInput = _getch();
@@ -148,6 +158,9 @@ string List::itemSelectionEffect()
     else if (listType == "Inventory") {
         selectedItem = "true";
     }
+    else if (listType == "Location") {
+        selectedItem = "true"; // todo: add effect of taking item
+	}
 
     return selectedItem;
 }
