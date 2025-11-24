@@ -25,12 +25,15 @@ extern const string timesOfDay[7];
 extern const string PLAYER_TILE;
 extern const string OPEN_TILE;
 extern const string CLOSED_TILE;
+extern const string LOCATION_TILE;
 
 extern vector<vector<string>>  qPressInfo;
 extern map<string, map<string, string>> keepsakesMap;
 extern map<string, map<string, string>> oldSoulsMap;
 extern map<string, map<string, string>> regionsMap;
 extern map<string, map<string, string>> enemiesMap;
+
+extern vector<string> allItemsVector;
 extern vector<string> keepsakesVector;
 extern vector<string> oldSoulsVector;
 extern vector<string> regionsVector;

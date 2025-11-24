@@ -24,7 +24,6 @@ Level::Level(string area, string keepsake, string oldSoul)
 	gameStarted = false;
 	mapSelected = true;
 	locationActive = false;
-	// initialize as base Location to avoid null checks later
 	currentLocation = make_unique<Location>();
 	endGame = 0;
 	playerCoords = make_tuple(1, 1); // todo: add random spawning
@@ -45,6 +44,7 @@ Level::Level(string area, string keepsake, string oldSoul)
 	playerSetup();
 }
 
+// MAP //
 void Level::initWorldMap()
 {
 	string currentLine = "";
@@ -78,6 +78,10 @@ void Level::initWorldMap()
 					currentLineResult += "0";
 					tileIndex++;
 				}
+				else if (tileValue == '2') {
+					currentLineResult += "2";
+					tileIndex++;
+				}
 			}
 			resultVector.push_back(currentLineResult);
 			rowIndex++;
@@ -99,6 +103,101 @@ void Level::initWorldMap()
 			sectorY++;
 		}
 	}
+}
+
+void Level::assignSectorToMap(tuple<int, int> numSector)
+{
+	int rowIndex = 0;
+	int tileIndex = 0;
+
+	for (mapSector sector : levelSectors) {
+		if (sector.sectorCoords == numSector) {
+			for (const auto& row : sector.sectorTileRows) {
+				for (char tile : row) {
+					if (tile == '0') { displayedSector[rowIndex][tileIndex] = OPEN_TILE; }
+					else if (tile == '1') { displayedSector[rowIndex][tileIndex] = CLOSED_TILE; }
+					else if (tile == '2') {
+						// todo: to fix colouring text, dont set location icon here, just save coords and set later
+						displayedSector[rowIndex][tileIndex] = colourText(LOCATION_TILE, YELLOW); // Fallback
+						// todo: randomly choose location type
+						currentSectorLocations.emplace_back(make_unique<Ruins>(make_tuple(tileIndex, rowIndex), numSector));
+						if (currentSectorLocations.back()->active) { displayedSector[rowIndex][tileIndex] = colourText(currentSectorLocations.back()->icon, YELLOW); }
+						else { displayedSector[rowIndex][tileIndex] = colourText(currentSectorLocations.back()->icon, INACTIVE); }
+					}
+					tileIndex++;
+				}
+				rowIndex++;
+				tileIndex = 0;
+			}
+		}
+	}
+
+	loadSectorEnemies();
+
+}
+
+void Level::loadNewSector(tuple<int, int> coords)
+{
+	int xOffsetSector = 0;
+	int yOffsetSector = 0;
+	int charPosX = get<0>(playerCoords);
+	int charPosY = get<1>(playerCoords);
+
+	switch (get<1>(coords)) {
+	case 10:
+		yOffsetSector = 1;
+		charPosY = 0;
+		break;
+	case -1:
+		yOffsetSector = -1;
+		charPosY = 9;
+		break;
+	}
+	switch (get<0>(coords)) {
+	case 16:
+		xOffsetSector = 1;
+		charPosX = 0;
+		break;
+	case -1:
+		xOffsetSector = -1;
+		charPosX = 15;
+		break;
+	}
+
+	int newCoordX = get<0>(mapSectorCoords) + xOffsetSector;
+	int newCoordY = get<1>(mapSectorCoords) + yOffsetSector;
+	mapSectorCoords = make_tuple(newCoordX, newCoordY);
+	playerCoords = make_tuple(charPosX, charPosY);
+
+	// loadSectorEnemies();
+}
+
+// ENEMIES //
+void Level::initEnemies()
+{
+	string currentLine = "";
+	string currentItem = "";
+	vector<string> displayList = {};
+	vector<string> fullList = {};
+
+	ifstream file("enemies.json");
+	while (getline(file, currentLine)) {
+		if (currentLine.empty()) continue;
+
+		if (currentLine.find("[") != string::npos) {
+			currentItem = currentLine.substr(1, currentLine.length() - 2);
+			fullList.push_back(currentItem);
+		}
+
+		else if (currentItem != "" && currentLine.find(":") != string::npos) {
+			size_t colonPosition = currentLine.find(":");
+			string key = currentLine.substr(0, colonPosition);
+			string value = currentLine.substr(colonPosition + 2);
+			enemiesMap[currentItem][key] = value;
+		}
+
+	}
+	file.close();
 }
 
 void Level::setEnemies(mapSector sector)
@@ -133,33 +232,7 @@ void Level::loadSectorEnemies()
 	}
 }
 
-void Level::initEnemies()
-{
-	string currentLine = "";
-	string currentItem = "";
-	vector<string> displayList = {};
-	vector<string> fullList = {};
-
-	ifstream file("enemies.json");
-	while (getline(file, currentLine)) {
-		if (currentLine.empty()) continue;
-
-		if (currentLine.find("[") != string::npos) {
-			currentItem = currentLine.substr(1, currentLine.length() - 2);
-			fullList.push_back(currentItem);
-		}
-
-		else if (currentItem != "" && currentLine.find(":") != string::npos) {
-			size_t colonPosition = currentLine.find(":");
-			string key = currentLine.substr(0, colonPosition);
-			string value = currentLine.substr(colonPosition + 2);
-			enemiesMap[currentItem][key] = value;
-		}
-
-	}
-	file.close();
-}
-
+// GAME SETUP //
 string Level::selectBoss(string area, int day)
 {
 	string currentBoss = "";
@@ -193,90 +266,7 @@ void Level::playerSetup()
 	playerInventory.at(0) = setKeepsake;
 }
 
-void Level::assignSectorToMap(tuple<int, int> numSector)
-{
-	int rowIndex = 0;
-	int tileIndex = 0;
-
-	for (mapSector sector : levelSectors) {
-		if (sector.sectorCoords == numSector) {
-			for (const auto& row : sector.sectorTileRows) {
-				for (char tile : row) {
-					if (tile == '0') { displayedSector[rowIndex][tileIndex] = OPEN_TILE; }
-					else { displayedSector[rowIndex][tileIndex] = CLOSED_TILE; }
-					tileIndex++;
-				}
-				rowIndex++;
-				tileIndex = 0;
-			}
-		}
-	}
-
-	loadSectorEnemies();
-	
-}
-
-void Level::loadNewSector(tuple<int, int> coords)
-{
-	int xOffsetSector = 0;
-	int yOffsetSector = 0;
-	int charPosX = get<0>(playerCoords);
-	int charPosY = get<1>(playerCoords);
-
-	switch (get<1>(coords)) {
-		case 10:
-			yOffsetSector = 1;
-			charPosY = 0;
-			break;
-		case -1:
-			yOffsetSector = -1;
-			charPosY = 9;
-			break;
-	}
-	switch (get<0>(coords)) {
-		case 16:
-			xOffsetSector = 1;
-			charPosX = 0;
-			break;
-		case -1:
-			xOffsetSector = -1;
-			charPosX = 15;
-			break;
-	}
-
-	int newCoordX = get<0>(mapSectorCoords) + xOffsetSector;
-	int newCoordY = get<1>(mapSectorCoords) + yOffsetSector;
-	mapSectorCoords = make_tuple(newCoordX, newCoordY);
-	playerCoords = make_tuple(charPosX, charPosY);
-
-	// loadSectorEnemies();
-}
-
-void Level::displayMap(string reset_colour)
-{
-	assignSectorToMap(mapSectorCoords);
-
-	playerTilePrev = displayedSector[get<1>(playerCoords)][get<0>(playerCoords)];
-	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
-
-	// Enemy Movement — now using pointers (non-owning) that refer into allSectorEnemies
-	for (auto* enemy : currentSectorEnemies) {
-		// enemy->updateMovement(displayedSector); todo: make enemies move only during night
-		int enemyX = get<0>(enemy->mapPos);
-		int enemyY = get<1>(enemy->mapPos);
-		cout << "Enemy " << enemy->enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
-		displayedSector[enemyY][enemyX] = colourText(enemy->icon, RED, reset_colour);
-	}
-
-	for (const auto& row : displayedSector) {
-		cout << " ";
-		for (const auto& tile : row) {
-			cout << tile;
-		}
-		cout << endl;
-	}
-}
-
+// UPDATES //
 void Level::updateMovement(char input)
 {
 	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = playerTilePrev;
@@ -303,22 +293,6 @@ void Level::updateMovement(char input)
 	checkPlayerLocation();
 }
 
-
-
-void Level::checkPlayerLocation()
-{
-	for (auto* enemy : currentSectorEnemies) {
-		int enemyX = get<0>(enemy->mapPos);
-		int enemyY = get<1>(enemy->mapPos);
-
-		if (enemyX == get<0>(playerCoords) && enemyY == get<1>(playerCoords)) {
-			clearScreen();
-			startCombat(*enemy);
-			break;
-		}
-	}
-}
-
 void Level::updateTime()
 {
 	currentAreaTimeCounter++;
@@ -337,6 +311,38 @@ void Level::updateTime()
 	}
 }
 
+void Level::checkPlayerLocation()
+{
+	for (auto* enemy : currentSectorEnemies) {
+		int enemyX = get<0>(enemy->mapPos);
+		int enemyY = get<1>(enemy->mapPos);
+
+		if (enemyX == get<0>(playerCoords) && enemyY == get<1>(playerCoords)) {
+			clearScreen();
+			startCombat(*enemy);
+			break;
+		}
+	}
+
+	for (const auto& location : currentSectorLocations) {
+		int locationX = get<0>(location->locationCoords);
+		int locationY = get<1>(location->locationCoords);
+		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords) && location->active) {
+			locationActive = true;
+			//currentLocation = move(location->clone());
+			currentLocation = make_unique<Ruins>(location->locationCoords, location->sectorCoords); // todo: fix this to clone properly
+			break;
+		}
+	}
+}
+
+vector<string> Level::updateInventory()
+{
+	vector<string> playerInvDisplay = initInvDisplay();
+	return playerInvDisplay;
+}
+
+// DISPLAY //
 void Level::displayWorld()
 {
 	displayTitle();
@@ -351,6 +357,31 @@ void Level::displayWorld()
 
 	displayMap(reset_colour);
 	cout << textSeparator;
+}
+
+void Level::displayMap(string reset_colour)
+{
+	assignSectorToMap(mapSectorCoords);
+
+	playerTilePrev = displayedSector[get<1>(playerCoords)][get<0>(playerCoords)];
+	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
+
+	// Enemy Movement — now using pointers (non-owning) that refer into allSectorEnemies
+	for (auto* enemy : currentSectorEnemies) {
+		// enemy->updateMovement(displayedSector); todo: make enemies move only during night
+		int enemyX = get<0>(enemy->mapPos);
+		int enemyY = get<1>(enemy->mapPos);
+		//cout << "Enemy " << enemy->enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
+		displayedSector[enemyY][enemyX] = colourText(enemy->icon, RED, reset_colour);
+	}
+
+	for (const auto& row : displayedSector) {
+		cout << " ";
+		for (const auto& tile : row) {
+			cout << tile;
+		}
+		cout << endl;
+	}
 }
 
 void Level::displayInventory(vector<string> inventory)
@@ -396,6 +427,7 @@ vector<string> Level::initInvDisplay()
 	return displayList;
 }
 
+// INPUT //
 void Level::getPlayerInput()
 {
 	string reset_colour = "";
@@ -404,7 +436,7 @@ void Level::getPlayerInput()
 
 	while (locationActive) {
 		char input = _getch();
-		if (input == 'e') {
+		if (input == 'f') {
 			clearScreen();
 			mapSelected = false;
 			break;
@@ -426,23 +458,18 @@ void Level::getPlayerInput()
 			clearScreen();
 			break;
 		}
-		else if (input == 'e') {
+		else if (input == 'f') {
 			clearScreen();
 			mapSelected = false;
-			break;
-		}
-		else if (input == 'p') { // todo: remove this debug
-			clearScreen();
-			locationActive = true;
-			currentLocation = make_unique<Ruins>(make_tuple(1, 2), make_tuple(0, 0));
 			break;
 		}
 	}
 }
 
+// COMBAT //
 void Level::startCombat(Enemy& enemy)
 {
-	Battle battleInstance(playerHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
+	Battle battleInstance(playerHP, playerMaxHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
 	battleInstance.startBattle(enemy);
 	_getch();
 
@@ -464,9 +491,9 @@ void Level::startCombat(Enemy& enemy)
 
 void Level::startBossCombat(string bossName)
 {
-	Battle battleInstance(playerHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
+	Battle battleInstance(playerHP, playerMaxHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
 	Enemy bossEnemy(bossName, make_tuple(-1, -1), make_tuple(-1, -1));
-	battleInstance.startBattle(bossEnemy);
+	battleInstance.startBattle(bossEnemy, true);
 	_getch();
 
 	if (!battleInstance.playerWon) {
@@ -483,10 +510,10 @@ void Level::startBossCombat(string bossName)
 	}
 }
 
+// MAIN LOOP //
 void Level::display()
 {
-	vector<string> playerInvDisplay;
-	playerInvDisplay = initInvDisplay();
+	vector<string> playerInvDisplay = initInvDisplay();
 	List playerInv("Inventory", playerInvDisplay);
 
 	while (true) {
@@ -509,19 +536,41 @@ void Level::display()
 
 			if (mapSelected) {
 				if (returnValue == "true") { mapSelected = false; }
+				else if (returnValue != "null") {
+					locationActive = false;
+
+					// todo: fix
+					for (auto& locPtr : currentSectorLocations) {
+						if (locPtr->locationCoords == currentLocation->locationCoords
+							&& locPtr->sectorCoords == currentLocation->sectorCoords) {
+							locPtr->active = false;
+							break;
+						}
+					}
+
+					// todo: below works but check the type of location first, as not all will give items
+					for (string & invItem : playerInventory) {
+						if (invItem == "Empty") {
+							invItem = returnValue;
+							break;
+						}
+					}
+
+					// todo: when duplicate items exist, make sure to add #1, #2, etc
+					// todo: if inventory full, prompt to replace an item
+					playerInvDisplay = updateInventory();
+					playerInv = List("Inventory", playerInvDisplay);
+				}
 				clearScreen();
 				continue;
 			}
-
-			if (!mapSelected) {
+			else {
 				displayPlayerInfo();
 				string returnValue = playerInv.displayItems();
 				if (returnValue == "true") { mapSelected = true; }
 				clearScreen();
 				continue;
 			}
-
-			// getPlayerInput();
 		}
 
 		if (endGame==1) {

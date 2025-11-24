@@ -7,7 +7,7 @@
 #include <thread>
 #include <conio.h>
 
-Battle::Battle(int hp, int atk, int def, int spd, vector<string> inv, string wpn)
+Battle::Battle(int hp, int maxHp, int atk, int def, int spd, vector<string> inv, string wpn)
 {
 	playerATK = atk;
 	playerDEF = def;
@@ -15,7 +15,7 @@ Battle::Battle(int hp, int atk, int def, int spd, vector<string> inv, string wpn
 	playerSPD = spd;
 	playerInv = inv;
 	playerWpn = wpn;
-	playerMaxHP = hp;
+	playerMaxHP = maxHp;
 
 	enemyHP = 10;
 	enemyATK = 1;
@@ -156,7 +156,7 @@ void Battle::pauseBattle(int milliseconds)
 	this_thread::sleep_for(chrono::milliseconds(1000));
 }
 
-void Battle::startBattle(Enemy enemyType)
+void Battle::startBattle(Enemy enemyType, bool bossFight)
 {
 	enemyHP = stoi(enemyType.HP);
 	enemyMaxHP = enemyHP;
@@ -169,7 +169,12 @@ void Battle::startBattle(Enemy enemyType)
 	displayTitle();
 	displayBattleInfo();
 
-	cout << " A " << colourText(enemyType.enemyName, RED) << " blocks your path!";
+	if (bossFight) {
+		cout << " The " << colourText("[!] " + enemyType.enemyName, RED) << " stands before you!";
+	}
+	else {
+		cout << " A " << colourText(enemyType.enemyName, RED) << " blocks your path!";
+	}
 	pauseBattle(DELAY_TIME);
 	cout << "\n\n Press any key to begin the battle...";
 	_getch();

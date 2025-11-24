@@ -58,6 +58,12 @@ string List::displayItems(function<void()> infoCallback)
                 break;
             }
         }
+        else if (charInput == 'f') {
+            if (listType != "Main Menu" && listType != "Change Keepsake" && listType != "Change Old Soul" && listType != "Change Region") {
+                return "true";
+                break;
+            }
+        }
     }
 
     return "null";
@@ -151,16 +157,10 @@ string List::itemSelectionEffect()
             selectedItem = "start";
         }
     }
-    else if (listType == "Change Keepsake" || listType == "Change Old Soul" || listType == "Change Region") {
+    else if (listType != "Inventory") {
         clearScreen();
         selectedItem = currentSelectedItem;
     }
-    else if (listType == "Inventory") {
-        selectedItem = "true";
-    }
-    else if (listType == "Location") {
-        selectedItem = "true"; // todo: add effect of taking item
-	}
 
     return selectedItem;
 }

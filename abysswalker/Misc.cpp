@@ -44,18 +44,20 @@ const string GREEN = "\033[0;32m";
 const string YELLOW = "\033[0;33m";
 const string BLUE = "\033[0;36m";
 
-const string PLAYER_TILE = " A ";
+const string PLAYER_TILE = "<A>";
 const string OPEN_TILE = "   ";
 const string CLOSED_TILE = "NNN";
+const string LOCATION_TILE = "[L]";
 
 const int DELAY_TIME = 800;
 const int DELAY_TIME_SHORT = 400;
-const int charMovementPerTimeCounter = 2;
+const int charMovementPerTimeCounter = 15;
 const int bossEncounterDays[3] = { 3, 6, 9 };
 
 const string timesOfDay[7] = { "Dawn", "Morning", "Midday", "Afternoon", "Dusk", "Evening", "Night" };
 
-// Structs
+// Data Structures
+vector<string> allItemsVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item"}; // todo change to dynamically load from files
 vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
 vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon"};
 vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm of the Abyss" };
@@ -107,7 +109,6 @@ vector<vector<string>>  qPressInfo = {
 };
 
 // Misc Functions
-
 string colourText(const string& text, const string& colour, const string& reset)
 {
     return colour + text + reset;

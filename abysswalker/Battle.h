@@ -21,7 +21,7 @@ public:
 	bool playerWon;
 	int playerHP;
 
-	explicit Battle(int hp, int atk, int def, int spd, vector<string> inv, string wpn);
-	void startBattle(Enemy enemyType);
+	explicit Battle(int hp, int maxHp, int atk, int def, int spd, vector<string> inv, string wpn);
+	void startBattle(Enemy enemyType, bool bossFight = false);
 };
 

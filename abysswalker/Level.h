@@ -40,6 +40,7 @@ private:
     vector<Enemy*> currentSectorEnemies;
     // owning container of all enemies (unique_ptr ensures stable addresses for Enemy objects)
     vector<unique_ptr<Enemy>> allSectorEnemies;
+	vector<unique_ptr<Location>> currentSectorLocations;
 
     void initWorldMap();
     void initEnemies();
@@ -61,6 +62,7 @@ private:
     void checkPlayerLocation();
 	void updateTime();
     void displayInfoAndInventory();
+    vector<string> updateInventory();
 public:
     Level(string area, string keepsake, string oldSoul);
 
