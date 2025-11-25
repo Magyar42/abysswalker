@@ -14,7 +14,7 @@ Location::Location()
 	locationCoords = make_tuple(0, 0);
 	sectorCoords = make_tuple(0, 0);
 	locationType = "None";
-	active = true;
+	active = false;
 }
 
 Location::Location(tuple<int, int> coords, tuple<int, int> sector)
@@ -36,6 +36,7 @@ Ruins::Ruins()
 	locationType = "Ruins";
 	icon = "[R]";
 	finalItemsList = {};
+	active = true;
 }
 
 Ruins::Ruins(tuple<int, int> coords, tuple<int, int> sector)
@@ -44,6 +45,7 @@ Ruins::Ruins(tuple<int, int> coords, tuple<int, int> sector)
 	locationType = "Ruins";
 	icon = "[R]";
 	finalItemsList = {};
+	active = true;
 
 	vector<string> fullItemsList = allItemsByType[0];
 	for (int i = 0; i < 3; i++) {
@@ -86,6 +88,7 @@ Crystal::Crystal()
 	locationType = "Crystal Lizard";
 	icon = "[C]";
 	finalItemsList = {};
+	active = true;
 }
 
 Crystal::Crystal(tuple<int, int> coords, tuple<int, int> sector)
@@ -94,6 +97,7 @@ Crystal::Crystal(tuple<int, int> coords, tuple<int, int> sector)
 	locationType = "Crystal Lizard";
 	icon = "[C]";
 	finalItemsList = {};
+	active = true;
 
 	vector<string> fullItemsList = allItemsByType[2];
 	for (int i = 0; i < 2; i++) {
@@ -136,6 +140,7 @@ Grave::Grave()
 	locationType = "Warrior's Grave";
 	icon = "[G]";
 	finalItemsList = {};
+	active = true;
 }
 
 Grave::Grave(tuple<int, int> coords, tuple<int, int> sector)
@@ -144,6 +149,7 @@ Grave::Grave(tuple<int, int> coords, tuple<int, int> sector)
 	locationType = "Warrior's Grave";
 	icon = "[G]";
 	finalItemsList = {};
+	active = true;
 
 	vector<string> fullItemsList = allItemsByType[1];
 	for (int i = 0; i < 3; i++) {
@@ -163,6 +169,7 @@ string Grave::interactStart(bool locationDisplaySelected, function<void()> infoC
 
 	clearScreen();
 	displayTitle();
+	cout << active;
 	cout << colourText(" You arrive at a decrepit ", reset_colour) << colourText(locationType, YELLOW, reset_colour) << ".\n";
 	cout << " The remains of a once-great hero lay here. Their armour is broken, but there may still be something of use. \n\n";
 

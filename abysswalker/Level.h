@@ -33,8 +33,7 @@ private:
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
     };
-	// Use a smart pointer so derived types are preserved (no slicing)
-	unique_ptr<Location> currentLocation;
+	Location* currentLocation = nullptr;
 
     // non-owning pointers to enemies in the current sector
     vector<Enemy*> currentSectorEnemies;

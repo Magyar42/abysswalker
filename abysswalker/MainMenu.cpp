@@ -112,7 +112,7 @@ void MainMenu::initItems()
 
 void MainMenu::displayMenuOptions()
 {
-    vector<string> selectionArray = { "View Itemlist", "Change Region", "Change Keepsake", "Change Old Soul", "Start" };
+    vector<string> selectionArray = { "View Itemlist", "Change Keepsake", "Change Old Soul", "Start" };
 
     List mainMenuOptions("Main Menu", selectionArray);
     while (true) {

@@ -24,7 +24,7 @@ Level::Level(string area, string keepsake, string oldSoul)
 	gameStarted = false;
 	mapSelected = true;
 	locationActive = false;
-	currentLocation = make_unique<Location>();
+	currentLocation = nullptr; // no ownership here; points into currentSectorLocations when active
 	endGame = 0;
 	playerCoords = make_tuple(1, 1); // todo: add random spawning
 	mapSectorCoords = make_tuple(0, 0);
@@ -320,13 +320,16 @@ void Level::checkPlayerLocation()
 		}
 	}
 
+	// TODO MAKE LOCATION ONLY ACTIVATE ONCE PER ENTRY
+	currentLocation = nullptr;
 	for (const auto& location : currentSectorLocations) {
 		int locationX = get<0>(location->locationCoords);
 		int locationY = get<1>(location->locationCoords);
 		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords) && location->active) {
-			locationActive = true;
-			//currentLocation = move(location->clone());
-			currentLocation = make_unique<Grave>(location->locationCoords, location->sectorCoords); // todo: fix this to clone properly
+			currentLocation = location.get();
+			if (currentLocation->active) {
+				locationActive = true;
+			}
 			break;
 		}
 	}
@@ -466,7 +469,7 @@ void Level::getPlayerInput()
 void Level::startCombat(Enemy& enemy)
 {
 	Battle battleInstance(playerHP, playerMaxHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
-	battleInstance.startBattle(enemy);
+	int numSouls = battleInstance.startBattle(enemy);
 	_getch();
 
 	if (!battleInstance.playerWon) {
@@ -481,7 +484,7 @@ void Level::startCombat(Enemy& enemy)
 		loadSectorEnemies();
 
 		playerHP = battleInstance.playerHP;
-		playerSouls += 100; // todo: calculate souls based on enemy type
+		playerSouls += numSouls;
 	}
 }
 
@@ -513,6 +516,11 @@ void Level::display()
 	List playerInv("Inventory", playerInvDisplay);
 
 	while (true) {
+		/*cout << currentLocation->active;
+		if (!locationActive && currentLocation->active == false) {
+			cout << " | Location no longer active.\n";
+		}*/
+
 		if (!locationActive) {
 			displayWorld();
 
@@ -534,15 +542,6 @@ void Level::display()
 				if (returnValue == "true") { mapSelected = false; }
 				else if (returnValue != "null") {
 					locationActive = false;
-
-					// todo: fix
-					/*for (auto& locPtr : currentSectorLocations) {
-						if (locPtr->locationCoords == currentLocation->locationCoords
-							&& locPtr->sectorCoords == currentLocation->sectorCoords) {
-							locPtr->active = false;
-							break;
-						}
-					}*/
 
 					// todo: below works but check the type of location first, as not all will give items
 					for (string & invItem : playerInventory) {
