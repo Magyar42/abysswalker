@@ -17,5 +17,6 @@ public:
 
 	void displaySaves();
 	void displayMenuOptions();
+	void initItems();
 };
 

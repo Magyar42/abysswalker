@@ -120,9 +120,7 @@ void Level::assignSectorToMap(tuple<int, int> numSector)
 						// todo: to fix colouring text, dont set location icon here, just save coords and set later
 						displayedSector[rowIndex][tileIndex] = colourText(LOCATION_TILE, YELLOW); // Fallback
 						// todo: randomly choose location type
-						currentSectorLocations.emplace_back(make_unique<Ruins>(make_tuple(tileIndex, rowIndex), numSector));
-						if (currentSectorLocations.back()->active) { displayedSector[rowIndex][tileIndex] = colourText(currentSectorLocations.back()->icon, YELLOW); }
-						else { displayedSector[rowIndex][tileIndex] = colourText(currentSectorLocations.back()->icon, INACTIVE); }
+						currentSectorLocations.emplace_back(make_unique<Grave>(make_tuple(tileIndex, rowIndex), numSector));
 					}
 					tileIndex++;
 				}
@@ -177,8 +175,6 @@ void Level::initEnemies()
 {
 	string currentLine = "";
 	string currentItem = "";
-	vector<string> displayList = {};
-	vector<string> fullList = {};
 
 	ifstream file("enemies.json");
 	while (getline(file, currentLine)) {
@@ -186,7 +182,7 @@ void Level::initEnemies()
 
 		if (currentLine.find("[") != string::npos) {
 			currentItem = currentLine.substr(1, currentLine.length() - 2);
-			fullList.push_back(currentItem);
+			enemiesVector.push_back(currentItem);
 		}
 
 		else if (currentItem != "" && currentLine.find(":") != string::npos) {
@@ -260,7 +256,7 @@ void Level::playerSetup()
 		playerATK = 2;
 		playerDEF = 0;
 		playerSPD = 1;
-		playerWeapon = "Greatsword";
+		playerWeapon = "Wolf Knight Greatsword";
 	}
 
 	playerInventory.at(0) = setKeepsake;
@@ -330,7 +326,7 @@ void Level::checkPlayerLocation()
 		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords) && location->active) {
 			locationActive = true;
 			//currentLocation = move(location->clone());
-			currentLocation = make_unique<Ruins>(location->locationCoords, location->sectorCoords); // todo: fix this to clone properly
+			currentLocation = make_unique<Grave>(location->locationCoords, location->sectorCoords); // todo: fix this to clone properly
 			break;
 		}
 	}
@@ -540,13 +536,13 @@ void Level::display()
 					locationActive = false;
 
 					// todo: fix
-					for (auto& locPtr : currentSectorLocations) {
+					/*for (auto& locPtr : currentSectorLocations) {
 						if (locPtr->locationCoords == currentLocation->locationCoords
 							&& locPtr->sectorCoords == currentLocation->sectorCoords) {
 							locPtr->active = false;
 							break;
 						}
-					}
+					}*/
 
 					// todo: below works but check the type of location first, as not all will give items
 					for (string & invItem : playerInventory) {

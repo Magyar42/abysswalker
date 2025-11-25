@@ -19,7 +19,6 @@ MainMenu::MainMenu(string area, string keepsake, string soul)
     int currentSlot = -1;
 
     ifstream saveFile("savefile.json");
-
     while (getline(saveFile, currentLine)) {
         if (currentLine.empty()) continue;
 
@@ -41,8 +40,9 @@ MainMenu::MainMenu(string area, string keepsake, string soul)
             }
         }
     }
-
     saveFile.close();
+
+    initItems();
 }
 
 void MainMenu::displaySaves()
@@ -69,6 +69,45 @@ void MainMenu::displaySaves()
     cout << "Loading save slot " << selectedSave << "...\n";
 
     clearScreen();
+}
+
+void MainMenu::initItems()
+{
+    string currentLine = "";
+    string currentItem = "";
+
+    ifstream file("items.txt");
+    while (getline(file, currentLine)) {
+        if (currentLine.empty()) continue;
+
+		// Add to vector of all items
+        if (currentLine.find("[") != string::npos) {
+            currentItem = currentLine.substr(1, currentLine.length() - 2);
+            allItemsVector.push_back(currentItem);
+        }
+
+		// Add to map of all items with desc, type and unlock status
+        else if (currentItem != "" && currentLine.find(":") != string::npos) {
+            size_t colonPosition = currentLine.find(":");
+            string key = currentLine.substr(0, colonPosition);
+            string value = currentLine.substr(colonPosition + 2);
+            allItemsMap[currentItem][key] = value;
+
+            // Add to separate ring, weapon, gem, default vectors
+            int itemTypeID = 0;
+            if (value == "ring") { itemTypeID = 1; }
+            else if (value == "weapon") { itemTypeID = 3; }
+            else if (value == "gem") { itemTypeID = 2; }
+            allItemsByType[itemTypeID].push_back(currentItem);
+
+            // Add to qPressInfo for item descriptions
+            if (key == "desc") {
+                qPressInfo[0].push_back(currentItem);
+                qPressInfo[1].push_back(allItemsMap[currentItem]["desc"]);
+            }
+        }
+    }
+    file.close();
 }
 
 void MainMenu::displayMenuOptions()

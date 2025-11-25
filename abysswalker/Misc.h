@@ -32,6 +32,8 @@ extern map<string, map<string, string>> keepsakesMap;
 extern map<string, map<string, string>> oldSoulsMap;
 extern map<string, map<string, string>> regionsMap;
 extern map<string, map<string, string>> enemiesMap;
+extern map<string, map<string, string>> allItemsMap;
+extern vector<vector<string>> allItemsByType;
 
 extern vector<string> allItemsVector;
 extern vector<string> keepsakesVector;

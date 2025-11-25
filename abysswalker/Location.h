@@ -35,7 +35,28 @@ public:
 	Ruins(tuple<int, int> coords, tuple<int, int> sector);
 
 	virtual string interactStart(bool locationDisplaySelected, function<void()> infoCallback = {}) override;
-	/*unique_ptr<Location> clone() const override {
-    	return make_unique<Ruins>(*this);
-	}*/
+};
+
+class Crystal : public Location
+{
+private:
+	vector<string> finalItemsList;
+	List itemsOptions;
+public:
+	Crystal();
+	Crystal(tuple<int, int> coords, tuple<int, int> sector);
+
+	virtual string interactStart(bool locationDisplaySelected, function<void()> infoCallback = {}) override;
+};
+
+class Grave : public Location
+{
+private:
+	vector<string> finalItemsList;
+	List itemsOptions;
+public:
+	Grave();
+	Grave(tuple<int, int> coords, tuple<int, int> sector);
+
+	virtual string interactStart(bool locationDisplaySelected, function<void()> infoCallback = {}) override;
 };

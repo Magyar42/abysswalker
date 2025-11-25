@@ -57,26 +57,26 @@ const int bossEncounterDays[3] = { 3, 6, 9 };
 const string timesOfDay[7] = { "Dawn", "Morning", "Midday", "Afternoon", "Dusk", "Evening", "Night" };
 
 // Data Structures
-vector<string> allItemsVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item"}; // todo change to dynamically load from files
-vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Test Item" };
-vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon"};
+vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Dung Pie", "Ironstone Bracelet", "Millwood Cloak" };
+vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon" };
 vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm of the Abyss" };
-vector<string> enemiesVector = { "Hollow Warrior", "Balder Knight", "Demonic Foliage", "Living Mushroom", "Knight of Stone", "Crystal Golem", "Black Knight" };
 map<string, map<string, string>> keepsakesMap = {};
 map<string, map<string, string>> oldSoulsMap = {};
 map<string, map<string, string>> regionsMap = {};
+
+vector<string> allItemsVector = {};
+map<string, map<string, string>> allItemsMap = {};
+vector<vector<string>> allItemsByType = { {}, {}, {}, {} };
+
+vector<string> enemiesVector = {};
 map<string, map<string, string>> enemiesMap = {};
-vector<vector<string>>  qPressInfo = {
+
+vector<vector<string>> qPressInfo = {
     { "View Itemlist",
     "Change Region",
     "Change Keepsake",
     "Change Old Soul",
     "Start",
-    "Life Ring",
-    "Fire Gem",
-    "Black Firebombs",
-    "Test Item",
-    "Greatsword",
     "Darkroot Depths",
     "Oolacile Township",
     "Chasm of the Abyss",
@@ -92,11 +92,6 @@ vector<vector<string>>  qPressInfo = {
     "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.",
     "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.",
     "Select this option to begin the game! Make sure you have chosen your starting gear well.",
-    "Begin with +3 HP.",
-    "Consumable item. Use at a Blacksmith to add the Fire effect to your current weapon.",
-    "Every other turn in combat, attack a second time, inflicting 2 damage. Triggers up to 3 times in one fight.",
-    "Unknown.",
-    "Base effect: Gain +2 " + colourText("ATK", RED) + ".",
     "A dark and untamed forest with hostile, yet weak, wildlife. The basin at its end is said to hold a great danger.",
     "A decrepit town that has been afflicted by the spread of the Abyss. Its denizens roam without their minds, acting as a potential threat if not dispatched quickly.",
     "The source of Oolacile's blight. A deep and dark chasm that has an unknown source. Can an individual even survive in such a place? There's one way to find out.",

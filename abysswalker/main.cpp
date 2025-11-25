@@ -27,12 +27,8 @@ int main()
         level.display();
 
         clearScreen();
-        if (level.endGame == 1) {
-            displayEndscreen(false);
-        }
-        else {
-            displayEndscreen(true);
-        }
+        if (level.endGame == 1) { displayEndscreen(false); }
+        else { displayEndscreen(true); }
 
         string displayArray[] = { to_string(level.playerHP), to_string(level.playerATK), to_string(level.playerDEF), to_string(level.playerSPD) };
         cout << "\n\n [Stats]: ";
