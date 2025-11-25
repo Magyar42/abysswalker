@@ -11,6 +11,7 @@
 #include <ctime>
 #include <functional>
 #include <algorithm>
+#include <ctime>
 using namespace std;
 
 Level::Level(string area, string keepsake, string oldSoul)
@@ -25,7 +26,7 @@ Level::Level(string area, string keepsake, string oldSoul)
 	gameStarted = false;
 	mapSelected = true;
 	locationActive = false;
-	currentLocation = nullptr; // no ownership here; points into currentSectorLocations when active
+	currentLocation = { make_tuple(0, 0), make_tuple(0, 0) };
 	endGame = 0;
 	playerCoords = make_tuple(1, 1); // todo: add random spawning
 	mapSectorCoords = make_tuple(0, 0);
@@ -124,10 +125,14 @@ void Level::assignSectorToMap(tuple<int, int> numSector)
 					if (tile == '0') { displayedSector[rowIndex][tileIndex] = OPEN_TILE; }
 					else if (tile == '1') { displayedSector[rowIndex][tileIndex] = CLOSED_TILE; }
 					else if (tile == '2') {
-						// todo: to fix colouring text, dont set location icon here, just save coords and set later
-						displayedSector[rowIndex][tileIndex] = colourText(LOCATION_TILE, YELLOW); // Fallback
-						// todo: randomly choose location type
-						currentSectorLocations.emplace_back(make_unique<Ruins>(make_tuple(tileIndex, rowIndex), numSector));
+						vector<tuple<int, int>> newLocation = { make_tuple(tileIndex, rowIndex), numSector };
+						if (find(inactiveLocations.begin(), inactiveLocations.end(), newLocation) != inactiveLocations.end()) {
+							displayedSector[rowIndex][tileIndex] = OPEN_TILE;
+						}
+						else {
+							displayedSector[rowIndex][tileIndex] = colourText(LOCATION_TILE, YELLOW);
+							currentSectorLocations.push_back(newLocation);
+						}
 					}
 					tileIndex++;
 				}
@@ -339,17 +344,15 @@ void Level::checkPlayerLocation()
 		}
 	}
 
-	// TODO MAKE LOCATION ONLY ACTIVATE ONCE PER ENTRY
-	currentLocation = nullptr;
-	for (const auto& location : currentSectorLocations) {
-		int locationX = get<0>(location->locationCoords);
-		int locationY = get<1>(location->locationCoords);
-		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords) && location->active) {
-			currentLocation = location.get();
-			if (currentLocation->active) {
+	for (auto location : currentSectorLocations) {
+		int locationX = get<0>(location[0]);
+		int locationY = get<1>(location[0]);
+		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords)) {
+			if (find(inactiveLocations.begin(), inactiveLocations.end(), location) == inactiveLocations.end()) {
+				currentLocation = location;
 				locationActive = true;
+				break;
 			}
-			break;
 		}
 	}
 }
@@ -646,16 +649,19 @@ void Level::startBossCombat(string bossName)
 // MAIN LOOP //
 void Level::display()
 {
+	srand(time(0));
 	vector<string> playerInvDisplay = initInvDisplay();
 	List playerInv("Inventory", playerInvDisplay);
 
-	while (true) {
-		/*cout << currentLocation->active;
-		if (!locationActive && currentLocation->active == false) {
-			cout << " | Location no longer active.\n";
-		}*/
+	Location* locationInstance = nullptr;
 
+	while (true) {
 		if (!locationActive) {
+			if (locationInstance) {
+				delete locationInstance;
+				locationInstance = nullptr;
+			}
+
 			displayWorld();
 
 			displayPlayerInfo();
@@ -669,19 +675,35 @@ void Level::display()
 
 			getPlayerInput();
 		}
-		else { 
-			string returnValue = currentLocation->interactStart(mapSelected, bind(&Level::displayInfoAndInventory, this));
+		else {
+			if (locationInstance == nullptr) {
+				int locationType = rand() % 3;
+				switch (locationType) {
+				case 0:
+					locationInstance = new Ruins(currentLocation[0], currentLocation[1]);
+					break;
+				case 1:
+					locationInstance = new Crystal(currentLocation[0], currentLocation[1]);
+					break;
+				case 2:
+					locationInstance = new Grave(currentLocation[0], currentLocation[1]);
+					break;
+				}
+			}
+
+			string returnValue = locationInstance->interactStart(mapSelected, bind(&Level::displayInfoAndInventory, this));
 
 			if (mapSelected) {
 				if (returnValue == "true") { mapSelected = false; }
 				else if (returnValue != "null") {
 					locationActive = false;
+					inactiveLocations.push_back(currentLocation);
 
-					if (currentLocation->locationType == "Warrior's Grave") {
+					if (locationInstance->locationType == "Warrior's Grave") {
 						resetWeapon(returnValue);
 						updatePlayerStats();
 					}
-					else if (currentLocation->locationType == "Crystal Lizard" || currentLocation->locationType == "Ruins") {
+					else if (locationInstance->locationType == "Crystal Lizard" || locationInstance->locationType == "Ruins") {
 						bool itemAdded = false;
 						for (string& invItem : playerInventory) {
 							if (invItem == "Empty") {
@@ -744,5 +766,10 @@ void Level::display()
 			clearScreen();
 			break;
 		}
+	}
+
+	if (locationInstance) {
+		delete locationInstance;
+		locationInstance = nullptr;
 	}
 }

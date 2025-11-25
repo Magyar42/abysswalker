@@ -34,13 +34,11 @@ private:
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
         {"0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"},
     };
-	Location* currentLocation = nullptr;
-
-    // non-owning pointers to enemies in the current sector
+	vector<tuple<int, int>> currentLocation;
     vector<Enemy*> currentSectorEnemies;
-    // owning container of all enemies (unique_ptr ensures stable addresses for Enemy objects)
     vector<unique_ptr<Enemy>> allSectorEnemies;
-	vector<unique_ptr<Location>> currentSectorLocations;
+	vector<vector<tuple<int, int>>> currentSectorLocations;
+	vector<vector<tuple<int, int>>> inactiveLocations;
 
     void initWorldMap();
     void initEnemies();
