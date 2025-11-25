@@ -18,7 +18,7 @@ MainMenu::MainMenu(string area, string keepsake, string soul)
     string currentLine = "";
     int currentSlot = -1;
 
-    ifstream saveFile("savefile.json");
+    ifstream saveFile("data/savefile.txt");
     while (getline(saveFile, currentLine)) {
         if (currentLine.empty()) continue;
 
@@ -76,7 +76,7 @@ void MainMenu::initItems()
     string currentLine = "";
     string currentItem = "";
 
-    ifstream file("items.txt");
+    ifstream file("data/items.txt");
     while (getline(file, currentLine)) {
         if (currentLine.empty()) continue;
 
@@ -121,7 +121,7 @@ void MainMenu::initItems()
 
 void MainMenu::displayMenuOptions()
 {
-    vector<string> selectionArray = { "View Itemlist", "Change Keepsake", "Change Old Soul", "Start" };
+    vector<string> selectionArray = { "Change Keepsake", "Start" };
 
     List mainMenuOptions("Main Menu", selectionArray);
     while (true) {
@@ -129,7 +129,6 @@ void MainMenu::displayMenuOptions()
         cout << " Prepare for your journey before starting. You can press Q for more information about the currently selected line at any time.\n\n";
         cout << colourText(" Region: ", BLUE) << setArea << "\n";
         cout << colourText(" Keepsake: ", BLUE) << setKeepsake << "\n";
-        cout << colourText(" Old Soul: ", BLUE) << setOldSoul << "\n";
         cout << textSeparator;
 
         string returnValue = mainMenuOptions.displayItems();

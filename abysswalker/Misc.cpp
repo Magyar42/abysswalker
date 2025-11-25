@@ -57,7 +57,7 @@ const int bossEncounterDays[3] = { 3, 6, 9 };
 const string timesOfDay[7] = { "Dawn", "Morning", "Midday", "Afternoon", "Dusk", "Evening", "Night" };
 
 // Data Structures
-vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Dung Pie", "Ironstone Bracelet", "Millwood Cloak"};
+vector<string> keepsakesVector = { "Life Ring", "Aged Feather", "Black Firebombs"};
 vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon" };
 vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm of the Abyss" };
 map<string, map<string, string>> keepsakesMap = {};
@@ -69,7 +69,9 @@ map<string, map<string, string>> allItemsMap = {};
 vector<vector<string>> allItemsByType = { {}, {}, {}, {} };
 
 vector<string> enemiesVector = {};
+vector<string> bossesVector = {};
 map<string, map<string, string>> enemiesMap = {};
+map<string, map<string, string>> bossesMap = {};
 
 vector<vector<string>> qPressInfo = {
     { "View Itemlist",

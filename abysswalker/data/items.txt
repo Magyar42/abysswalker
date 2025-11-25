@@ -12,7 +12,7 @@ type: weapon
 
 [Pyromancy Flame]
 stats: +1 ATK
-desc: Inflict Burn | Magic affinity
+desc: null
 unlocked: true
 type: weapon
 
@@ -24,7 +24,7 @@ type: weapon
 
 [Wooden Staff]
 stats: +1 ATK | +1 SPD
-desc: Magic affinity
+desc: null
 unlocked: true
 type: weapon
 
@@ -36,7 +36,7 @@ type: weapon
 
 [Sacred Chime]
 stats: +2 ATK | +4 HP
-desc: Magic affinity
+desc: null
 unlocked: true
 type: weapon
 
@@ -54,13 +54,7 @@ type: weapon
 
 [Izalith Staff]
 stats: +2 ATK | +1 DEF | +1 SPD
-desc: Magic affinity
-unlocked: true
-type: weapon
-
-[Demon's Fist]
-stats: +1 ATK
-desc: Gain +2 ATK for each equipped Ring
+desc: null
 unlocked: true
 type: weapon
 
@@ -96,13 +90,13 @@ type: weapon
 
 [Enchanted Blades]
 stats: +2 ATK | +1 SPD
-desc: Every other turn, there is a 50% chance of inflicting 1 Burn
+desc: null
 unlocked: true
 type: weapon
 
 [Sunlight Talisman]
 stats: +1 ATK | +1 HP
-desc: Every other turn, there is a 50% chance of gaining +1 max HP | Magic affinity
+desc: Every other turn, there is a 50% chance of gaining +1 max HP
 unlocked: true
 type: weapon
 
@@ -130,27 +124,9 @@ desc: null
 unlocked: true
 type: ring
 
-[Sun Princess Ring]
-stats: null
-desc: Every 10 steps, restore 2 HP
-unlocked: true
-type: ring
-
-[Estus Ring]
-stats: null
-desc: Healing effects grant an additional 2 HP
-unlocked: true
-type: ring
-
 [Covetous Serpent Ring]
 stats: null
 desc: Defeated enemies provide an additional 100 Souls
-unlocked: true
-type: ring
-
-[Young Dragon Ring]
-stats: null
-desc: Weapons with the Magic affinity gain +2 ATK
 unlocked: true
 type: ring
 
@@ -171,48 +147,6 @@ stats: null
 desc: Gain +1 SPD every other turn
 unlocked: true
 type: ring
-
-[Fire Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to inflict Burn with your weapon
-unlocked: true
-type: gem
-
-[Putrid Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to inflict Poison with your weapon
-unlocked: true
-type: gem
-
-[Lightning Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to inflict Stun with your weapon
-unlocked: true
-type: gem
-
-[Blessed Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to restore +1 HP with each attack
-unlocked: true
-type: gem
-
-[Crystalline Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to gain +2 SPD but -1 ATK
-unlocked: true
-type: gem
-
-[Chaos Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to inflict Burn with your weapon and gain +2 ATK
-unlocked: true
-type: gem
-
-[Simple Gem]
-stats: null
-desc: Consumable item; use at a Blacksmith to give your weapon the Magic affinity and +2 DEF
-unlocked: true
-type: gem
 
 [Black Firebombs]
 stats: null
@@ -247,12 +181,6 @@ type: default
 [Darkwraith Headpiece]
 stats: null
 desc: When wounded, restore HP equal to your ATK
-unlocked: true
-type: default
-
-[Duel Charm]
-stats: null
-desc: Gain 200 Souls at the start of each day
 unlocked: true
 type: default
 
@@ -361,65 +289,5 @@ type: default
 [Wolf's Blood]
 stats: null
 desc: When exposed, gain +4 DEF
-unlocked: true
-type: default
-
-[Izalith Gauntlets]
-stats: +1 ATK
-desc: At battle start, inflict 2 Burn
-unlocked: true
-type: default
-
-[Spell: Seething Chaos]
-stats: null
-desc: When wounded, inflict 3 Burn
-unlocked: true
-type: default
-
-[Spell: Barrier of Chaos]
-stats: +8 DEF
-desc: At battle start, gain 2 Burn
-unlocked: true
-type: default
-
-[Putrescent Gauntlets]
-stats: null
-desc: Inflict Poison equal to the damage dealt by the enemy's first strike
-unlocked: true
-type: default
-
-[Corrosive Buckler]
-stats: +2 DEF
-desc: At turn start, lose 1 DEF but inflict 2 Poison
-unlocked: true
-type: default
-
-[Dung Pie]
-stats: null
-desc: At battle start, inflict 6 Poison but gain 3 Poison
-unlocked: true
-type: default
-
-[Divine Armour]
-stats: null
-desc: Enemy's first strike deals double damage, but inflict them with 5 Stun
-unlocked: true
-type: default
-
-[Storm King Crown]
-stats: null
-desc: When Stun is inflicted on the enemy or you, gain +2 DEF
-unlocked: true
-type: default
-
-[Relic of the Ancients]
-stats: +2 ATK
-desc: At battle start, inflict 4 Stun but gain 2 Stun
-unlocked: true
-type: default
-
-[Stone Greaves]
-stats: +1 DEF
-desc: When you gain Stun, deal 2 damage
 unlocked: true
 type: default

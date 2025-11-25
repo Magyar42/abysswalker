@@ -7,6 +7,7 @@
 #include <chrono>
 #include <thread>
 #include <conio.h>
+#include <ctime>
 using namespace std;
 
 Location::Location()
@@ -42,6 +43,7 @@ Ruins::Ruins()
 Ruins::Ruins(tuple<int, int> coords, tuple<int, int> sector)
 	: Location(coords, sector)
 {
+	srand(time(0));
 	locationType = "Ruins";
 	icon = "[R]";
 	finalItemsList = {};
@@ -105,12 +107,13 @@ Crystal::Crystal()
 Crystal::Crystal(tuple<int, int> coords, tuple<int, int> sector)
 	: Location(coords, sector)
 {
+	srand(time(0));
 	locationType = "Crystal Lizard";
 	icon = "[C]";
 	finalItemsList = {};
 	active = true;
 
-	vector<string> fullItemsList = allItemsByType[2];
+	vector<string> fullItemsList = allItemsByType[1];
 	vector<string> selectedItems = {};
 	int newItemIndex = 0;
 	for (int i = 0; i < 2; i++) {
@@ -140,7 +143,7 @@ string Crystal::interactStart(bool locationDisplaySelected, function<void()> inf
 	clearScreen();
 	displayTitle();
 	cout << colourText(" You suddenly come across a small ", reset_colour) << colourText(locationType, YELLOW, reset_colour) << ".\n";
-	cout << " Its back houses several gems and minerals. If you're stealthy, you may be able to slice one off for yourself. \n\n";
+	cout << " Its back houses several gems and pieces of jewelry it has scavenged for. If you're careful, you may be able to take one. \n\n";
 
 	if (locationDisplaySelected) {
 		string returnedItem = itemsOptions.displayItems(infoCallback);
@@ -168,6 +171,7 @@ Grave::Grave()
 Grave::Grave(tuple<int, int> coords, tuple<int, int> sector)
 	: Location(coords, sector)
 {
+	srand(time(0));
 	locationType = "Warrior's Grave";
 	icon = "[G]";
 	finalItemsList = {};
@@ -204,6 +208,99 @@ string Grave::interactStart(bool locationDisplaySelected, function<void()> infoC
 	displayTitle();
 	cout << colourText(" You arrive at a decrepit ", reset_colour) << colourText(locationType, YELLOW, reset_colour) << ".\n";
 	cout << " The remains of a once-great hero lay here. Their armour is broken, but there may still be a weapon of use. \n\n";
+
+	if (locationDisplaySelected) {
+		string returnedItem = itemsOptions.displayItems(infoCallback);
+		if (returnedItem != "null") { active = false; }
+		return returnedItem;
+	}
+	else {
+		for (string item : finalItemsList) {
+			cout << "   " << colourText(item, INACTIVE) << "\n";
+		}
+		cout << textSeparator;
+	}
+}
+
+// Bonfire
+Bonfire::Bonfire()
+	: Location()
+{
+	locationType = "Bonfire";
+	icon = "[B]";
+	finalItemsList = {};
+	active = true;
+}
+
+Bonfire::Bonfire(tuple<int, int> coords, tuple<int, int> sector)
+	: Location(coords, sector)
+{
+	locationType = "Bonfire";
+	icon = "[B]";
+	finalItemsList = {};
+	active = true;
+
+	vector<string> finalItemsList = { "Rest", "Leave" };
+
+	itemsOptions = List("Location", finalItemsList);
+}
+
+string Bonfire::interactStart(bool locationDisplaySelected, function<void()> infoCallback)
+{
+	string reset_colour = "";
+	if (locationDisplaySelected) { reset_colour = RESET; }
+	else { reset_colour = INACTIVE; }
+
+	clearScreen();
+	displayTitle();
+	cout << colourText(" Within your view, you spot a ", reset_colour) << colourText(locationType, YELLOW, reset_colour) << ".\n";
+	cout << " You may rest here for a while to restore HP, though some time will surely pass. \n\n";
+
+	if (locationDisplaySelected) {
+		string returnedItem = itemsOptions.displayItems(infoCallback);
+		if (returnedItem != "null") { active = false; }
+		return returnedItem;
+	}
+	else {
+		cout << "   " << colourText("Rest", INACTIVE) << "\n";
+		cout << "   " << colourText("Leave", INACTIVE) << "\n";
+		cout << textSeparator;
+	}
+}
+
+// Firekeeper
+Firekeeper::Firekeeper()
+	: Location()
+{
+	locationType = "Firekeeper";
+	icon = "[F]";
+	finalItemsList = {};
+	active = true;
+}
+
+Firekeeper::Firekeeper(tuple<int, int> coords, tuple<int, int> sector)
+	: Location(coords, sector)
+{
+	locationType = "Firekeeper";
+	icon = "[F]";
+	finalItemsList = {};
+	active = true;
+
+	vector<string> finalItemsList = { "HP", "ATK", "DEF", "SPD", "Leave" };
+
+	itemsOptions = List("Location", finalItemsList);
+}
+
+string Firekeeper::interactStart(bool locationDisplaySelected, function<void()> infoCallback)
+{
+	string reset_colour = "";
+	if (locationDisplaySelected) { reset_colour = RESET; }
+	else { reset_colour = INACTIVE; }
+
+	clearScreen();
+	displayTitle();
+	cout << colourText(" You come across a lone woman, a ", reset_colour) << colourText(locationType, YELLOW, reset_colour) << " sitting calmly next to a tall flame.\n";
+	cout << " She can help empower you, at a cost of 300 Souls. \n\n";
 
 	if (locationDisplaySelected) {
 		string returnedItem = itemsOptions.displayItems(infoCallback);

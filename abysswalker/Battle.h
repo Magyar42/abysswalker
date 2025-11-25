@@ -9,11 +9,10 @@ class Battle
 private:
 	int playerATK, playerDEF, playerSPD, playerMaxHP;
 	int enemyHP, enemyATK, enemyDEF, enemySPD, enemyMaxHP;
-	int playerBurn, playerStun, playerPoison, enemyBurn, enemyStun, enemyPoison;
 	int numTurn, numSouls;
 	int playerDMGDealt, enemyDMGDealt;
 	vector<string> playerInv;
-	string playerWpn, enemyAbility;
+	string playerWpn, enemyName, enemyAbility;
 	bool battleOver, playerExposed, enemyExposed, playerWounded, enemyWounded;
 
 	bool blacksmithCoalUsed, profaneGunpowderActive, carthusBeaconActive, catarinaGreavesActive;

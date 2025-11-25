@@ -28,8 +28,8 @@ Level::Level(string area, string keepsake, string oldSoul)
 	locationActive = false;
 	currentLocation = { make_tuple(0, 0), make_tuple(0, 0) };
 	endGame = 0;
-	playerCoords = make_tuple(1, 1); // todo: add random spawning
-	mapSectorCoords = make_tuple(0, 0);
+	playerCoords = make_tuple(7, 4);
+	mapSectorCoords = make_tuple(2, 2);
 	playerHPBase = 10;
 	playerMaxHPBase = 10;
 	playerATKBase = 1;
@@ -61,15 +61,15 @@ void Level::initWorldMap()
 	string currentLineResult = "";
 	vector<string> resultVector;
 
-	int numSectorsPerRow = 2;
-	int numSectors = 4;
+	int numSectorsPerRow = 5;
+	int numSectors = 25;
 	int sectorX = 0;
 	int sectorY = 0;
 	int sectorPerRowCounter = 0;
 
 	for (int i = 0; i < numSectors; i++) {
 		sectorPerRowCounter++;
-		string sectorFile = "abysswalker_level" + to_string(i) + ".csv";
+		string sectorFile = "sectors/abysswalker_level" + to_string(i) + ".csv";
 		ifstream levelFile(sectorFile);
 
 		rowIndex = 0;
@@ -188,20 +188,32 @@ void Level::initEnemies()
 	string currentLine = "";
 	string currentItem = "";
 
-	ifstream file("enemies.json");
+	ifstream file("data/enemies.txt");
 	while (getline(file, currentLine)) {
 		if (currentLine.empty()) continue;
 
 		if (currentLine.find("[") != string::npos) {
 			currentItem = currentLine.substr(1, currentLine.length() - 2);
-			enemiesVector.push_back(currentItem);
+			
+			if (currentItem == "Titanite Demon" || currentItem == "Moonlight Butterfly" || currentItem == "Hydra of the Basin") {
+				bossesVector.push_back(currentItem);
+			}
+			else {
+				enemiesVector.push_back(currentItem);
+			}
 		}
 
 		else if (currentItem != "" && currentLine.find(":") != string::npos) {
 			size_t colonPosition = currentLine.find(":");
 			string key = currentLine.substr(0, colonPosition);
 			string value = currentLine.substr(colonPosition + 2);
-			enemiesMap[currentItem][key] = value;
+			
+			if (currentItem == "Titanite Demon" || currentItem == "Moonlight Butterfly" || currentItem == "Hydra of the Basin") {
+				bossesMap[currentItem][key] = value;
+			}
+			else {
+				enemiesMap[currentItem][key] = value;
+			}
 		}
 
 	}
@@ -210,8 +222,9 @@ void Level::initEnemies()
 
 void Level::setEnemies(mapSector sector)
 {
-	int enemySpawnLimit = 4;
+	int enemySpawnLimit = 3;
 	int numEnemiesToSpawn = rand() % (enemySpawnLimit + 1);
+	numEnemiesToSpawn += 1;
 
 	for (int i = 0; i < numEnemiesToSpawn; i++) {
 		int enemyTypeIndex = rand() % enemiesVector.size();
@@ -222,7 +235,6 @@ void Level::setEnemies(mapSector sector)
 
 			if (sector.sectorTileRows[spawnY][spawnX] == '0') {
 				tuple<int, int> enemyPosInSector = make_tuple(spawnX, spawnY);
-				// create a new Enemy on the heap and store the unique_ptr
 				allSectorEnemies.emplace_back(make_unique<Enemy>(enemiesVector[enemyTypeIndex], sector.sectorCoords, enemyPosInSector));
 				break;
 			}
@@ -347,7 +359,10 @@ void Level::checkPlayerLocation()
 	for (auto location : currentSectorLocations) {
 		int locationX = get<0>(location[0]);
 		int locationY = get<1>(location[0]);
-		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords)) {
+		int locationXSector = get<0>(location[1]);
+		int locationYSector = get<1>(location[1]);
+
+		if (locationX == get<0>(playerCoords) && locationY == get<1>(playerCoords) && locationXSector == get<0>(mapSectorCoords) && locationYSector == get<1>(mapSectorCoords)) {
 			if (find(inactiveLocations.begin(), inactiveLocations.end(), location) == inactiveLocations.end()) {
 				currentLocation = location;
 				locationActive = true;
@@ -375,7 +390,6 @@ void Level::resetWeapon(string newWeapon)
 			playerWeapon = newWeapon;
 			playerWeaponDetails["Name"] = newWeapon;
 			playerWeaponDetails["Effect"] = allItemsMap[newWeapon]["desc"];
-			if (newWeapon == "Pyromancy Flame") { playerWeaponDetails["Gem"] = "Fire Gem"; }
 
 			string statsString = allItemsMap[newWeapon]["stats"];
 			vector<string> itemStats = {};
@@ -409,7 +423,6 @@ void Level::resetWeapon(string newWeapon)
 	}
 }
 
-// todo: call when inventory changes OR weapon gains upgrades
 void Level::updatePlayerStats(bool setHP)
 {
 	setBaseStats();
@@ -497,12 +510,12 @@ void Level::displayMap(string reset_colour)
 	playerTilePrev = displayedSector[get<1>(playerCoords)][get<0>(playerCoords)];
 	displayedSector[get<1>(playerCoords)][get<0>(playerCoords)] = colourText(PLAYER_TILE, BLUE, reset_colour);
 
-	// Enemy Movement — now using pointers (non-owning) that refer into allSectorEnemies
 	for (auto* enemy : currentSectorEnemies) {
-		// enemy->updateMovement(displayedSector); todo: make enemies move only during night
+		/*if (currentAreaTimeIndex >= 4) {
+			enemy->updateMovement(displayedSector);
+		}*/
 		int enemyX = get<0>(enemy->mapPos);
 		int enemyY = get<1>(enemy->mapPos);
-		//cout << "Enemy " << enemy->enemyName << " at (" << enemyX << ", " << enemyY << ")\n";
 		displayedSector[enemyY][enemyX] = colourText(enemy->icon, RED, reset_colour);
 	}
 
@@ -623,7 +636,7 @@ void Level::startCombat(Enemy& enemy)
 void Level::startBossCombat(string bossName)
 {
 	Battle battleInstance(playerHP, playerMaxHP, playerATK, playerDEF, playerSPD, playerInventory, playerWeapon);
-	Enemy bossEnemy(bossName, make_tuple(-1, -1), make_tuple(-1, -1));
+	Enemy bossEnemy(bossName, make_tuple(-1, -1), make_tuple(-1, -1), true);
 	battleInstance.startBattle(bossEnemy, true);
 	_getch();
 
@@ -632,7 +645,7 @@ void Level::startBossCombat(string bossName)
 	}
 	else {
 		playerHP = battleInstance.playerHP;
-		playerSouls += 500;
+		playerSouls += 100;
 		if (bossEnemy.enemyName == "Hydra of the Basin") {
 			endGame = 2;
 		}
@@ -677,17 +690,23 @@ void Level::display()
 		}
 		else {
 			if (locationInstance == nullptr) {
-				int locationType = rand() % 3;
+				int locationType = rand() % 5;
 				switch (locationType) {
-				case 0:
-					locationInstance = new Ruins(currentLocation[0], currentLocation[1]);
-					break;
-				case 1:
-					locationInstance = new Crystal(currentLocation[0], currentLocation[1]);
-					break;
-				case 2:
-					locationInstance = new Grave(currentLocation[0], currentLocation[1]);
-					break;
+					case 0:
+						locationInstance = new Ruins(currentLocation[0], currentLocation[1]);
+						break;
+					case 1:
+						locationInstance = new Crystal(currentLocation[0], currentLocation[1]);
+						break;
+					case 2:
+						locationInstance = new Grave(currentLocation[0], currentLocation[1]);
+						break;
+					case 3:
+						locationInstance = new Bonfire(currentLocation[0], currentLocation[1]);
+						break;
+					case 4:
+						locationInstance = new Firekeeper(currentLocation[0], currentLocation[1]);
+						break;
 				}
 			}
 
@@ -744,6 +763,33 @@ void Level::display()
 							}
 						}
 						updatePlayerStats();
+					}
+					else if (locationInstance->locationType == "Bonfire") {
+						playerHP += 10;
+						if (playerHP > playerMaxHP) { playerHP = playerMaxHP; }
+
+						for (int i = 0; i < 4; i++) {
+							currentAreaTimeIndex++;
+							if (currentAreaTimeIndex >= 7) {
+								if (currentAreaDay % 3 == 0) {
+									clearScreen();
+									startBossCombat(currentBoss);
+								}
+
+								currentAreaTimeIndex = 0;
+								currentAreaDay++;
+							}
+						}
+					}
+					else if (locationInstance->locationType == "Firekeeper") {
+						if (playerSouls >= 300) {
+							if (returnValue == "HP") { playerMaxHPBase += 1; }
+							if (returnValue == "ATK") { playerATKBase += 1; }
+							if (returnValue == "DEF") { playerDEFBase += 1; }
+							if (returnValue == "SPD") { playerSPDBase += 1; }
+							playerSouls -= 300;
+							updatePlayerStats();
+						}
 					}
 
 					// todo: when duplicate items exist, make sure to add #1, #2, etc

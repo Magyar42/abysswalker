@@ -32,6 +32,7 @@ extern map<string, map<string, string>> keepsakesMap;
 extern map<string, map<string, string>> oldSoulsMap;
 extern map<string, map<string, string>> regionsMap;
 extern map<string, map<string, string>> enemiesMap;
+extern map<string, map<string, string>> bossesMap;
 extern map<string, map<string, string>> allItemsMap;
 extern vector<vector<string>> allItemsByType;
 
@@ -40,6 +41,7 @@ extern vector<string> keepsakesVector;
 extern vector<string> oldSoulsVector;
 extern vector<string> regionsVector;
 extern vector<string> enemiesVector;
+extern vector<string> bossesVector;
 
 string colourText(const string& text, const string& colour, const string& reset = RESET);
 string getStats(string HP, string ATK, string DEF, string SPD);

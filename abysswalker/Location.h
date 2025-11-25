@@ -60,3 +60,27 @@ public:
 
 	virtual string interactStart(bool locationDisplaySelected, function<void()> infoCallback = {}) override;
 };
+
+class Bonfire : public Location
+{
+private:
+	vector<string> finalItemsList;
+	List itemsOptions;
+public:
+	Bonfire();
+	Bonfire(tuple<int, int> coords, tuple<int, int> sector);
+
+	virtual string interactStart(bool locationDisplaySelected, function<void()> infoCallback = {}) override;
+};
+
+class Firekeeper : public Location
+{
+private:
+	vector<string> finalItemsList;
+	List itemsOptions;
+public:
+	Firekeeper();
+	Firekeeper(tuple<int, int> coords, tuple<int, int> sector);
+
+	virtual string interactStart(bool locationDisplaySelected, function<void()> infoCallback = {}) override;
+};

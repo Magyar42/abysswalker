@@ -2,29 +2,40 @@
 #include "Misc.h"
 #include <tuple>
 #include <iostream>
+#include <ctime>
 using namespace std;
 
-Enemy::Enemy(string type, tuple<int, int> sector, tuple<int, int> pos)
+Enemy::Enemy(string type, tuple<int, int> sector, tuple<int, int> pos, bool isBoss)
 {
 	enemyName = type;
 	sectorPos = sector;
 	mapPos = pos;
 	mapPosPrev = pos;
-	HP = enemiesMap[enemyName]["HP"];
-	ATK = enemiesMap[enemyName]["ATK"];
-	DEF = enemiesMap[enemyName]["DEF"];
-	SPD = enemiesMap[enemyName]["SPD"];
-	icon = "<" + enemiesMap[enemyName]["map_icon"] + ">";
-	ability = enemiesMap[enemyName]["ability"];
+    if (isBoss) {
+        HP = bossesMap[enemyName]["HP"];
+        ATK = bossesMap[enemyName]["ATK"];
+        DEF = bossesMap[enemyName]["DEF"];
+        SPD = bossesMap[enemyName]["SPD"];
+        icon = "<" + bossesMap[enemyName]["map_icon"] + ">";
+        ability = bossesMap[enemyName]["ability"];
+	}
+    else {
+        HP = enemiesMap[enemyName]["HP"];
+        ATK = enemiesMap[enemyName]["ATK"];
+        DEF = enemiesMap[enemyName]["DEF"];
+        SPD = enemiesMap[enemyName]["SPD"];
+        icon = "<" + enemiesMap[enemyName]["map_icon"] + ">";
+        ability = enemiesMap[enemyName]["ability"];
+    }
 }
 
 void Enemy::updateMovement(const vector<vector<string>>& sector)
 {
+    srand(time(0));
     tuple<int, int> newPos = mapPos;
     mapPosPrev = mapPos;
     int movementChance = rand() % 100;
 
-    // todo: fix enemies wrongly believing some tiles are closed/open when they are not
     if (movementChance < 50) {
         int attempts = 0;
         const int maxAttempts = 10;
@@ -42,13 +53,11 @@ void Enemy::updateMovement(const vector<vector<string>>& sector)
             // Bounds check before indexing
             if (row < 0 || column < 0 || row >= static_cast<int>(sector.size()) ||
                 column >= static_cast<int>(sector[row].size())) {
-                cout << "Enemy " << enemyName << " tried to move to closed tile at (" << get<0>(newPos) << ", " << get<1>(newPos) << ")\n";
                 newPos = mapPos;
                 continue;
             }
 
             if (sector[row][column] == CLOSED_TILE) {
-                cout << "Enemy " << enemyName << " tried to move to closed tile at (" << get<0>(newPos) << ", " << get<1>(newPos) << ")\n";
                 newPos = mapPos;
                 continue;
             }

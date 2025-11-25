@@ -16,20 +16,15 @@ Battle::Battle(int hp, int maxHp, int atk, int def, int spd, vector<string> inv,
 	playerInv = inv;
 	playerWpn = wpn;
 	playerMaxHP = maxHp;
-	playerBurn = 0;
-	playerStun = 0;
-	playerPoison = 0;
 	playerDMGDealt = 0;
 
 	enemyHP = 10;
 	enemyATK = 1;
 	enemyDEF = 0;
 	enemySPD = 0;
+	enemyName = "";
 	enemyAbility = "";
 	enemyMaxHP = 10;
-	enemyBurn = 0;
-	enemyStun = 0;
-	enemyPoison = 0;
 	enemyDMGDealt = 0;
 
 	playerExposed = false;
@@ -45,6 +40,7 @@ Battle::Battle(int hp, int maxHp, int atk, int def, int spd, vector<string> inv,
 	blacksmithCoalUsed = false;
 	profaneGunpowderActive = false;
 	carthusBeaconActive = false;
+	catarinaGreavesActive = false;
 }
 
 void Battle::playerAttack()
@@ -125,7 +121,7 @@ void Battle::enemyAttack()
 	}
 }
 
-// Used for various other sources of damage like Burn, Poison, Abilities, etc
+// Used for various other sources of damage
 void Battle::inflictDamage(bool isPlayer, int numDamage, int numTimes)
 {
 	for (int i = 0; i < numTimes; i++) {
@@ -249,6 +245,7 @@ int Battle::startBattle(Enemy enemyType, bool bossFight)
 	enemyATK = stoi(enemyType.ATK);
 	enemyDEF = stoi(enemyType.DEF);
 	enemySPD = stoi(enemyType.SPD);
+	enemyName = enemyType.enemyName;
 	enemyAbility = enemyType.ability;
 
 	clearScreen();
@@ -307,6 +304,26 @@ int Battle::startBattle(Enemy enemyType, bool bossFight)
 
 void Battle::checkEffectsBattleStart()
 {
+	if (enemyName == "Demonic Foliage") {
+		if (enemySPD > playerSPD) {
+			cout << "\n The " << enemyName << "'s ability triggered as they have more SPD, dealing 2 damage!";
+			pauseBattle(DELAY_TIME_SHORT);
+			inflictDamage(true, 2);
+		}
+	}
+	else if (enemyName == "Black Knight") {
+		enemyATK += playerATK;
+		cout << "\n The " << enemyName << "'s ability triggered, increasing their ATK by " << playerATK << "!";
+		pauseBattle(DELAY_TIME_SHORT);
+	}
+	else if (enemyName == "Moonlight Butterfly") {
+		if (enemySPD > playerSPD) {
+			enemyATK += 4;
+			cout << "\n The " << enemyName << "'s ability triggered as they have more SPD, increasing their ATK by +4!";
+			pauseBattle(DELAY_TIME_SHORT);
+		}
+	}
+
 	for (string item : playerInv) {
 		if (item == "Millwood Cloak") {
 			if (playerMaxHP > playerHP) {
@@ -334,28 +351,6 @@ void Battle::checkEffectsBattleStart()
 			playerMaxHP += playerDEF;
 			playerHP += playerDEF;
 			cout << "\n Your " << item << " increased your max HP by your current DEF (" << playerDEF << ")!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-		else if (item == "Izalith Gauntlets") {
-			enemyBurn += 2;
-			cout << "\n Your " << item << " inflicted 2 stacks of Burn on the enemy!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-		else if (item == "Barrier of Chaos") {
-			playerBurn += 2;
-			cout << "\n Your " << item << " inflicted 2 stacks of Burn on yourself!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-		else if (item == "Dung Pie") {
-			enemyPoison += 6;
-			playerPoison += 3;
-			cout << "\n Your " << item << " inflicted 6 stacks of Poison on the enemy and 3 stacks of Poison on yourself!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-		else if (item == "Relic of the Ancients") {
-			enemyStun += 4;
-			playerStun += 2;
-			cout << "\n Your " << item << " inflicted 4 stacks of Stun on the enemy and 2 stacks of Stun on yourself!";
 			pauseBattle(DELAY_TIME_SHORT);
 		}
 		else if (item == "Black Firebombs") {
@@ -394,15 +389,7 @@ void Battle::checkEffectsPlayerTurn()
 {
 	checkEffectsAnyTurn();
 
-	if (playerWpn == "Enchanted Blades") {
-		int effectChance = rand() % 2;
-		if (effectChance == 1 || numTurn % 2 != 0) {
-			enemyBurn += 1;
-			cout << "\n Your " << playerWpn << " inflicted 1 stack of Burn on the enemy!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-	}
-	else if (playerWpn == "Sunlight Talisman") {
+	if (playerWpn == "Sunlight Talisman") {
 		int effectChance = rand() % 2;
 		if (effectChance == 1 || numTurn % 2 != 0) {
 			playerMaxHP += 1;
@@ -453,21 +440,30 @@ void Battle::checkEffectsPlayerTurn()
 				pauseBattle(DELAY_TIME_SHORT);
 			}
 		}
-		else if (item == "Corrosive Buckler") {
-			if (playerDEF > 0) {
-				enemyPoison += 2;
-				playerDEF -= 1;
-				checkEffectsPlayerChangedStat("DEF", -1);
-				cout << "\n Your " << item << " inflicted 2 stacks of Poison on the enemy and decreased your DEF by 1!";
-				pauseBattle(DELAY_TIME_SHORT);
-			}
-		}
 	}
 }
 
 void Battle::checkEffectsEnemyTurn()
 {
 	checkEffectsAnyTurn();
+
+	if (enemyName == "Living Mushroom") {
+		if (numTurn % 2 != 0 && enemyMaxHP > enemyHP) {
+			enemyHP += 1;
+			cout << "\n The " << enemyName << "'s ability triggered, restoring 2 HP!";
+			pauseBattle(DELAY_TIME_SHORT);
+		}
+	}
+	else if (enemyName == "Knight of Stone") {
+		enemyATK += 1;
+		cout << "\n The " << enemyName << "'s ability triggered, increasing their ATK by +1!";
+		pauseBattle(DELAY_TIME_SHORT);
+	}
+	else if (enemyName == "Hydra of the Basin") {
+		enemyATK += 1;
+		cout << "\n The " << enemyName << "'s ability triggered, increasing their ATK by +1!";
+		pauseBattle(DELAY_TIME_SHORT);
+	}
 }
 
 void Battle::checkEffectsAnyTurn()
@@ -476,6 +472,12 @@ void Battle::checkEffectsAnyTurn()
 
 void Battle::checkEffectsPlayerExposed()
 {
+	if (enemyName == "Hollow Warrior") {
+		enemyATK += 1;
+		cout << "\n The " << enemyName << "'s ability triggered, increasing their ATK by +1!";
+		pauseBattle(DELAY_TIME_SHORT);
+	}
+
 	for (string item : playerInv) {
 		if (item == "Catarina Armour") {
 			playerDEF += 3;
@@ -551,6 +553,12 @@ void Battle::checkEffectsEnemyExposed()
 
 void Battle::checkEffectsPlayerWounded()
 {
+	if (enemyName == "Hollow Warrior") {
+		enemyATK += 1;
+		cout << "\n The " << enemyName << "'s ability triggered, increasing their ATK by +1!";
+		pauseBattle(DELAY_TIME_SHORT);
+	}
+
 	if (playerWpn == "Crow Talons") {
 		playerATK += 3;
 		cout << "\n Your " << playerWpn << " increased your ATK by +3 and dealt 4 damage to you!";
@@ -559,12 +567,7 @@ void Battle::checkEffectsPlayerWounded()
 	}
 
 	for (string item : playerInv) {
-		if (item == "Spell: Seething Chaos") {
-			enemyBurn += 3;
-			cout << "\n Your " << item << " inflicted 3 stacks of Burn on the enemy!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-		else if (item == "Darkwraith Headpiece") {
+		if (item == "Darkwraith Headpiece") {
 			if (playerMaxHP > playerHP) {
 				playerHP += playerATK;
 				if (playerHP > playerMaxHP) { playerHP = playerMaxHP; }
@@ -614,21 +617,12 @@ void Battle::checkEffectsPlayerStrikes()
 
 void Battle::checkEffectsEnemyStrikes()
 {
-	for (string item : playerInv) {
-		if (item == "Putrescent Gauntlets") {
-			if (numTurn == 1) {
-				enemyPoison += enemyDMGDealt;
-				cout << "\n Your " << item << " inflicted " << enemyDMGDealt << " stacks of Poison on the enemy!";
-				pauseBattle(DELAY_TIME_SHORT);
-			}
-		}
-		else if (item == "Divine Armour") { 
-			if (numTurn == 1) {
-				enemyStun += 5;
-				cout << "\n Your " << item << " dealt " << enemyDMGDealt << " damage to you, but inflicted 5 stacks of Stun on the enemy!";
-				pauseBattle(DELAY_TIME_SHORT);
-				inflictDamage(true, enemyDMGDealt);
-			}
+	if (enemyName == "Titanite Demon") {
+		int effectChance = rand() % 2;
+		if (effectChance == 1 || numTurn % 2 != 0) {
+			cout << "\n The " << enemyName << "'s ability triggered, inflicting 2 damage on you!";
+			pauseBattle(DELAY_TIME_SHORT);
+			inflictDamage(true, 2);
 		}
 	}
 }
@@ -636,14 +630,6 @@ void Battle::checkEffectsEnemyStrikes()
 void Battle::checkEffectsPlayerInflicted(string statusEffect)
 {
 	checkEffectsAnyInflicted(statusEffect);
-
-	for (string item : playerInv) {
-		if (item == "Stone Greaves" && statusEffect == "Stun") {
-			cout << "\n Your " << item << " dealt 2 damage to the enemy!";
-			pauseBattle(DELAY_TIME_SHORT);
-			inflictDamage(false, 2);
-		}
-	}
 }
 
 void Battle::checkEffectsEnemyInflicted(string statusEffect)
@@ -653,14 +639,6 @@ void Battle::checkEffectsEnemyInflicted(string statusEffect)
 
 void Battle::checkEffectsAnyInflicted(string statusEffect)
 {
-	for (string item : playerInv) {
-		if (item == "Storm King Crown" && statusEffect == "Stun") {
-			playerDEF += 2;
-			checkEffectsPlayerChangedStat("DEF", 2);
-			cout << "\n Your " << item << " increased your DEF by +2!";
-			pauseBattle(DELAY_TIME_SHORT);
-		}
-	}
 }
 
 void Battle::checkEffectsPlayerChangedStat(string statChanged, int numChanged)

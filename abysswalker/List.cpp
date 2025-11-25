@@ -81,7 +81,6 @@ string List::displayImportedItems(string filename, map<string, map<string, strin
         vector<string> displayList = {};
         vector<string> fullList = {};
 
-        // Loop through each item in .json, fill out the dictionary with keys and values
         ifstream itemFile(filename);
         while (getline(itemFile, currentLine)) {
             if (currentLine.empty()) continue;
@@ -170,17 +169,17 @@ string List::selectSublist(string newList)
     string selectedItem = "";
     if (newList == "Change Keepsake") {
         List keepsakesList(newList, keepsakesVector, true);
-        selectedItem = keepsakesList.displayImportedItems("keepsakes.json", keepsakesMap);
+        selectedItem = keepsakesList.displayImportedItems("data/keepsakes.txt", keepsakesMap);
         selectedItem += "|keepsake";
     }
     else if (newList == "Change Old Soul") {
         List oldSoulsList(newList, oldSoulsVector, true);
-        selectedItem = oldSoulsList.displayImportedItems("oldsouls.json", oldSoulsMap);
+        selectedItem = oldSoulsList.displayImportedItems("data/oldsouls.txt", oldSoulsMap);
         selectedItem += "|oldsoul";
     }
     else if (newList == "Change Region") {
         List regionsList(newList, regionsVector, true);
-        selectedItem = regionsList.displayImportedItems("regions.json", regionsMap);
+        selectedItem = regionsList.displayImportedItems("data/regions.txt", regionsMap);
         selectedItem += "|region";
     }
     return selectedItem;

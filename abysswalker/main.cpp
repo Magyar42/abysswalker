@@ -12,7 +12,7 @@
 using namespace std;
 
 string setArea = "Darkroot Depths";
-string setKeepsake = "Fire Gem";
+string setKeepsake = "Life Ring";
 string setOldSoul = "Soul of the Wolf Knight";
 
 int main()

@@ -1,0 +1,9 @@
+
+[Life Ring]
+unlocked: true
+
+[Aged Feather]
+unlocked: true
+
+[Black Firebombs]
+unlocked: true
