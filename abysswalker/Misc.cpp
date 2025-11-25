@@ -57,7 +57,7 @@ const int bossEncounterDays[3] = { 3, 6, 9 };
 const string timesOfDay[7] = { "Dawn", "Morning", "Midday", "Afternoon", "Dusk", "Evening", "Night" };
 
 // Data Structures
-vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Dung Pie", "Ironstone Bracelet", "Millwood Cloak" };
+vector<string> keepsakesVector = { "Life Ring", "Fire Gem", "Black Firebombs", "Dung Pie", "Ironstone Bracelet", "Millwood Cloak"};
 vector<string> oldSoulsVector = { "Soul of the Wolf Knight", "Soul of the Dragonslayer", "Soul of the Chaos Flame", "Soul of the Paledrake", "Soul of the Darkmoon" };
 vector<string> regionsVector = { "Darkroot Depths", "Oolacile Township", "Chasm of the Abyss" };
 map<string, map<string, string>> keepsakesMap = {};
@@ -87,20 +87,20 @@ vector<vector<string>> qPressInfo = {
     "Soul of the Darkmoon",
     "Titanite Demon"},
 
-    { "Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.",
-    "There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.",
-    "Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.",
-    "Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.",
-    "Select this option to begin the game! Make sure you have chosen your starting gear well.",
-    "A dark and untamed forest with hostile, yet weak, wildlife. The basin at its end is said to hold a great danger.",
-    "A decrepit town that has been afflicted by the spread of the Abyss. Its denizens roam without their minds, acting as a potential threat if not dispatched quickly.",
-    "The source of Oolacile's blight. A deep and dark chasm that has an unknown source. Can an individual even survive in such a place? There's one way to find out.",
-    "You are Sir Artorias, one of Lord Gwyn's Four Great Knights. Your ability with a greatsword is unmatched.",
-    "Dragonslayer Ornstein was captain of the Four Great Knights, leading the war against the dragons alongside Lord Gwyn's exiled firstborn.",
-    "The Witch of Izalith inherited the Soul of Life, and her daughters bear her legacy. Pyromancy comes naturally from Chaos.",
-    "Seath the Scaleless was born lacking the stone scales of his brethren. Turning to forbidden sorceries for a solution, he descended into madness.",
-    "Gwyndolin was the third child of Lord Gwyn. Hidden from public view, he lead the Blades of the Darkmoon to dispense justice across Lordran.",
-    "Titanite Demon: " + getStats("7", "2", "7", "3") + " \n Every other attack has a 50% chance of inflicting Stun."}
+    { " Items are the main way of getting stronger in ABYSSWALKER. There are many that can be unlocked by meeting specific conditions, allowing them to appear in-game.",
+    " There are 3 regions to travel through in ABYSSWALKER. Each has different locations, enemies, bosses, and mechanics. To unlock the next region, you must achieve victory in the prior region.",
+    " Keepsakes are items that you start with. They usually provide passive effects, but can sometimes be used in specific situations. More keepsakes can be unlocked by completing specific objectives.",
+    " Old Souls are the powerful souls of heroes long gone. If one is selected, you will begin with different stats and items. Old Souls can be found during gameplay, unlocking them permanently.",
+    " Select this option to begin the game! Make sure you have chosen your starting gear well.",
+    " A dark and untamed forest with hostile, yet weak, wildlife. The basin at its end is said to hold a great danger.",
+    " A decrepit town that has been afflicted by the spread of the Abyss. Its denizens roam without their minds, acting as a potential threat if not dispatched quickly.",
+    " The source of Oolacile's blight. A deep and dark chasm that has an unknown source. Can an individual even survive in such a place? There's one way to find out.",
+    " You are Sir Artorias, one of Lord Gwyn's Four Great Knights. Your ability with a greatsword is unmatched.",
+    " Dragonslayer Ornstein was captain of the Four Great Knights, leading the war against the dragons alongside Lord Gwyn's exiled firstborn.",
+    " The Witch of Izalith inherited the Soul of Life, and her daughters bear her legacy. Pyromancy comes naturally from Chaos.",
+    " Seath the Scaleless was born lacking the stone scales of his brethren. Turning to forbidden sorceries for a solution, he descended into madness.",
+    " Gwyndolin was the third child of Lord Gwyn. Hidden from public view, he lead the Blades of the Darkmoon to dispense justice across Lordran.",
+    " Titanite Demon: " + getStats("7", "2", "7", "3") + " \n Every other attack has a 50% chance of inflicting Stun."}
 };
 
 // Misc Functions
@@ -154,7 +154,7 @@ void qPressCheck(string currentSelection)
 {
     for (int i = 0; i < qPressInfo[0].size(); ++i) {
         if (qPressInfo[0][i] == currentSelection) {
-            cout << colourText("\n [INFO] " + qPressInfo[1][i] + "\n", RESET);
+            cout << colourText("\n [INFO]" + qPressInfo[1][i] + "\n", RESET);
         }
     }
 }

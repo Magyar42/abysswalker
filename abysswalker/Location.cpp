@@ -48,10 +48,21 @@ Ruins::Ruins(tuple<int, int> coords, tuple<int, int> sector)
 	active = true;
 
 	vector<string> fullItemsList = allItemsByType[0];
+	vector<string> selectedItems = {};
+	int newItemIndex = 0;
 	for (int i = 0; i < 3; i++) {
-		// todo: add check to make sure no duplicate items are chosen
-		int newItemIndex = rand() % fullItemsList.size();
-		finalItemsList.push_back(fullItemsList[newItemIndex]);
+		while (true) {
+			newItemIndex = rand() % fullItemsList.size();
+
+			if (find(selectedItems.begin(), selectedItems.end(), fullItemsList[newItemIndex]) != selectedItems.end()) {
+				continue;
+			}
+			else {
+				finalItemsList.push_back(fullItemsList[newItemIndex]);
+				selectedItems.push_back(fullItemsList[newItemIndex]);
+				break;
+			}
+		}
 	}
 
 	itemsOptions = List("Location", finalItemsList);
@@ -100,10 +111,21 @@ Crystal::Crystal(tuple<int, int> coords, tuple<int, int> sector)
 	active = true;
 
 	vector<string> fullItemsList = allItemsByType[2];
+	vector<string> selectedItems = {};
+	int newItemIndex = 0;
 	for (int i = 0; i < 2; i++) {
-		// todo: add check to make sure no duplicate items are chosen
-		int newItemIndex = rand() % fullItemsList.size();
-		finalItemsList.push_back(fullItemsList[newItemIndex]);
+		while (true) {
+			newItemIndex = rand() % fullItemsList.size();
+
+			if (find(selectedItems.begin(), selectedItems.end(), fullItemsList[newItemIndex]) != selectedItems.end()) {
+				continue;
+			}
+			else {
+				finalItemsList.push_back(fullItemsList[newItemIndex]);
+				selectedItems.push_back(fullItemsList[newItemIndex]);
+				break;
+			}
+		}
 	}
 
 	itemsOptions = List("Location", finalItemsList);
@@ -151,11 +173,22 @@ Grave::Grave(tuple<int, int> coords, tuple<int, int> sector)
 	finalItemsList = {};
 	active = true;
 
-	vector<string> fullItemsList = allItemsByType[1];
+	vector<string> fullItemsList = allItemsByType[3];
+	vector<string> selectedItems = {};
+	int newItemIndex = 0;
 	for (int i = 0; i < 3; i++) {
-		// todo: add check to make sure no duplicate items are chosen
-		int newItemIndex = rand() % fullItemsList.size();
-		finalItemsList.push_back(fullItemsList[newItemIndex]);
+		while (true) {
+			newItemIndex = rand() % fullItemsList.size();
+
+			if (find(selectedItems.begin(), selectedItems.end(), fullItemsList[newItemIndex]) != selectedItems.end()) {
+				continue;
+			}
+			else {
+				finalItemsList.push_back(fullItemsList[newItemIndex]);
+				selectedItems.push_back(fullItemsList[newItemIndex]);
+				break;
+			}
+		}
 	}
 
 	itemsOptions = List("Location", finalItemsList);
@@ -169,9 +202,8 @@ string Grave::interactStart(bool locationDisplaySelected, function<void()> infoC
 
 	clearScreen();
 	displayTitle();
-	cout << active;
 	cout << colourText(" You arrive at a decrepit ", reset_colour) << colourText(locationType, YELLOW, reset_colour) << ".\n";
-	cout << " The remains of a once-great hero lay here. Their armour is broken, but there may still be something of use. \n\n";
+	cout << " The remains of a once-great hero lay here. Their armour is broken, but there may still be a weapon of use. \n\n";
 
 	if (locationDisplaySelected) {
 		string returnedItem = itemsOptions.displayItems(infoCallback);

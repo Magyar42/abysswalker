@@ -22,6 +22,8 @@ int main()
 
         MainMenu menu(setArea, setKeepsake, setOldSoul);
         menu.displayMenuOptions();
+        setKeepsake = menu.setKeepsake;
+		setOldSoul = menu.setOldSoul;
 
         Level level(setArea, setKeepsake, setOldSoul);
         level.display();

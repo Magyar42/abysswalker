@@ -94,16 +94,25 @@ void MainMenu::initItems()
             allItemsMap[currentItem][key] = value;
 
             // Add to separate ring, weapon, gem, default vectors
-            int itemTypeID = 0;
-            if (value == "ring") { itemTypeID = 1; }
-            else if (value == "weapon") { itemTypeID = 3; }
-            else if (value == "gem") { itemTypeID = 2; }
-            allItemsByType[itemTypeID].push_back(currentItem);
+            if (key == "type") {
+                int itemTypeID = 0;
+                if (value == "ring") { itemTypeID = 1; }
+                else if (value == "gem") { itemTypeID = 2; }
+                else if (value == "weapon") { itemTypeID = 3; }
+                allItemsByType[itemTypeID].push_back(currentItem);
+            }
 
             // Add to qPressInfo for item descriptions
             if (key == "desc") {
+				string infoText = "";
+                if (allItemsMap[currentItem]["desc"] != "null") {
+                    infoText += " | " + allItemsMap[currentItem]["desc"];
+                }
+                if (allItemsMap[currentItem]["stats"] != "null") {
+                    infoText += " | " + allItemsMap[currentItem]["stats"];
+                }
                 qPressInfo[0].push_back(currentItem);
-                qPressInfo[1].push_back(allItemsMap[currentItem]["desc"]);
+                qPressInfo[1].push_back(infoText);
             }
         }
     }

@@ -1,354 +1,425 @@
 [Wolf Knight Greatsword]
-desc: +2 ATK
+stats: +2 ATK
+desc: null
 unlocked: true
 type: weapon
 
 [Sellsword Twinblades]
-desc: +1 ATK | +1 SPD
+stats: +1 ATK | +1 SPD
+desc: null
 unlocked: true
 type: weapon
 
 [Pyromancy Flame]
-desc: +1 ATK | Inflict Burn | Magic affinity
+stats: +1 ATK
+desc: Inflict Burn | Magic affinity
 unlocked: true
 type: weapon
 
 [Steel Spear]
-desc: +1 ATK | +1 DEF
+stats: +1 ATK | +1 DEF
+desc: null
 unlocked: true
 type: weapon
 
 [Wooden Staff]
-desc: +1 ATK | +1 SPD | Magic affinity
+stats: +1 ATK | +1 SPD
+desc: Magic affinity
 unlocked: true
 type: weapon
 
 [Fume Greatsword]
-desc: +4 ATK | -2 SPD
+stats: +4 ATK | -2 SPD
+desc: null
 unlocked: true
 type: weapon
 
 [Sacred Chime]
-desc: +2 ATK | +4 HP | Magic affinity
+stats: +2 ATK | +4 HP
+desc: Magic affinity
 unlocked: true
 type: weapon
 
 [Valorheart]
-desc: +2 ATK | +4 DEF
+stats: +2 ATK | +4 DEF
+desc: null
 unlocked: true
 type: weapon
 
 [Dark Hand]
-desc: +1 ATK | Restore 1 HP on strike
+stats: +1 ATK
+desc: Restore 1 HP on strike
 unlocked: true
 type: weapon
 
 [Izalith Staff]
-desc: +2 ATK | +1 DEF | +1 SPD | Magic affinity
+stats: +2 ATK | +1 DEF | +1 SPD
+desc: Magic affinity
 unlocked: true
 type: weapon
 
 [Demon's Fist]
-desc: +1 ATK | Gain +2 ATK for each equipped Ring
+stats: +1 ATK
+desc: Gain +2 ATK for each equipped Ring
 unlocked: true
 type: weapon
 
 [Dragonslayer Greatbow]
-desc: +5 ATK | +1 SPD | Lose 1 SPD with each strike, if SPD reaches 0 then -3 ATK
+stats: +5 ATK | +1 SPD
+desc: Lose 1 SPD with each strike, if SPD reaches 0 then -3 ATK
 unlocked: true
 type: weapon
 
 [Lifeblood Spear]
-desc: +2 ATK | When 2 or more HP is restored, gain +1 ATK
+stats: +2 ATK
+desc: When 2 or more HP is restored, gain +1 ATK
 unlocked: true
 type: weapon
 
 [Crow Talons]
-desc: +2 ATK | When wounded, gain +3 ATK but take 4 damage
+stats: +2 ATK
+desc: When wounded, gain +3 ATK but take 4 damage
 unlocked: true
 type: weapon
 
 [Crystalline Rapier]
-desc: +2 ATK | +2 SPD
+stats: +2 ATK | +2 SPD
+desc: null
 unlocked: true
 type: weapon
 
 [Battle Axe]
-desc: +3 ATK
+stats: +3 ATK
+desc: null
 unlocked: true
 type: weapon
 
 [Enchanted Blades]
-desc: +2 ATK | +1 SPD | Every other turn, there is a 50% chance of inflicting 1 Burn
+stats: +2 ATK | +1 SPD
+desc: Every other turn, there is a 50% chance of inflicting 1 Burn
 unlocked: true
 type: weapon
 
 [Sunlight Talisman]
-desc: +1 ATK | +1 HP | Every other turn, there is a 50% chance of gaining +1 max HP | Magic affinity
+stats: +1 ATK | +1 HP
+desc: Every other turn, there is a 50% chance of gaining +1 max HP | Magic affinity
 unlocked: true
 type: weapon
 
 [Life Ring]
-desc: +4 HP
+stats: +4 HP
+desc: null
 unlocked: true
 type: ring
 
 [Havel's Ring]
-desc: +4 SPD
+stats: +4 SPD
+desc: null
 unlocked: true
 type: ring
 
 [Ring of Steel Protection]
-desc: +4 DEF
+stats: +4 DEF
+desc: null
 unlocked: true
 type: ring
 
 [Chloranthy Ring]
-desc: +4 ATK
+stats: +4 ATK
+desc: null
 unlocked: true
 type: ring
 
 [Sun Princess Ring]
+stats: null
 desc: Every 10 steps, restore 2 HP
 unlocked: true
 type: ring
 
 [Estus Ring]
+stats: null
 desc: Healing effects grant an additional 2 HP
 unlocked: true
 type: ring
 
 [Covetous Serpent Ring]
+stats: null
 desc: Defeated enemies provide an additional 100 Souls
 unlocked: true
 type: ring
 
 [Young Dragon Ring]
+stats: null
 desc: Weapons with the Magic affinity gain +2 ATK
 unlocked: true
 type: ring
 
 [Ring of the Evil Eye]
+stats: null
 desc: Restore 1 HP every other turn
 unlocked: true
 type: ring
 
 [Dragonscale Ring]
+stats: null
 desc: Gain +1 DEF every other turn
 unlocked: true
 type: ring
 
 [Carthus Bloodring]
+stats: null
 desc: Gain +1 SPD every other turn
 unlocked: true
 type: ring
 
 [Fire Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to inflict Burn with your weapon
 unlocked: true
 type: gem
 
 [Putrid Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to inflict Poison with your weapon
 unlocked: true
 type: gem
 
 [Lightning Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to inflict Stun with your weapon
 unlocked: true
 type: gem
 
 [Blessed Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to restore +1 HP with each attack
 unlocked: true
 type: gem
 
 [Crystalline Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to gain +2 SPD but -1 ATK
 unlocked: true
 type: gem
 
 [Chaos Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to inflict Burn with your weapon and gain +2 ATK
 unlocked: true
 type: gem
 
 [Simple Gem]
+stats: null
 desc: Consumable item; use at a Blacksmith to give your weapon the Magic affinity and +2 DEF
 unlocked: true
 type: gem
 
 [Black Firebombs]
+stats: null
 desc: Gain +1 ATK for your first 3 turns
 unlocked: true
 type: default
 
 [Catarina Armour]
-desc: +3 DEF | -2 SPD | When exposed, gain +3 DEF
+stats: +3 DEF | -2 SPD
+desc: When exposed, gain +3 DEF
 unlocked: true
 type: default
 
 [Ironstone Bracelet]
+stats: null
 desc: Enemy has -2 ATK, but when exposed, they gain +3 ATK
 unlocked: true
 type: default
 
 [Fina's Gloves]
-desc: +3 HP | +1 SPD
+stats: +3 HP | +1 SPD
+desc: null
 unlocked: true
 type: default
 
 [Fina's Helmet]
-desc: +3 DEF | +1 SPD
+stats: +3 DEF | +1 SPD
+desc: null
 unlocked: true
 type: default
 
 [Darkwraith Headpiece]
+stats: null
 desc: When wounded, restore HP equal to your ATK
 unlocked: true
 type: default
 
 [Duel Charm]
+stats: null
 desc: Gain 200 Souls at the start of each day
 unlocked: true
 type: default
 
 [Millwood Cloak]
-desc: +2 HP | At battle start, restore 2 HP
+stats: +2 HP 
+desc: At battle start, restore 2 HP
 unlocked: true
 type: default
 
 [Millwood Helmet]
-desc: +1 HP | +1 DEF | When exposed, restore 3 HP
+stats: +1 HP | +1 DEF
+desc: When exposed, restore 3 HP
 unlocked: true
 type: default
 
 [Aged Feather]
-desc: +1 SPD | At turn start, convert 1 SPD to restore 2 HP if HP isn't full
+stats: +1 SPD
+desc: At turn start, convert 1 SPD to restore 2 HP if HP isn't full
 unlocked: true
 type: default
 
 [Carthus Boots]
+stats: null
 desc: At battle start, take 2 damage and gain +2 SPD
 unlocked: true
 type: default
 
 [Blacksmith's Coal]
+stats: null
 desc: Exposed can trigger 1 additional time in combat, when exposed gain +2 DEF
 unlocked: true
 type: default
 
 [Spiked Shield]
-desc: +10 DEF | When exposed, take 4 damage
+stats: +10 DEF
+desc: When exposed, take 4 damage
 unlocked: true
 type: default
 
 [Spell: Curse of Londor]
+stats: null
 desc: When an enemy is wounded, trigger your wounded effects
 unlocked: true
 type: default
 
 [Spell: Iron Flesh]
+stats: null
 desc: When exposed, gain +7 DEF but lose 1 SPD
 unlocked: true
 type: default
 
 [Spell: Carthus Beacon]
+stats: null
 desc: Whenever you deal non-strike damage to the enemy, deal an additional 2 damage
 unlocked: true
 type: default
 
 [Profane Gunpowder]
+stats: null
 desc: Bomb items trigger 1 additional time
 unlocked: true
 type: default
 
 [Roped Firebomb]
+stats: null
 desc: When exposed, deal 5 damage to the enemy
 unlocked: true
 type: default
 
 [Legion Armour]
+stats: null
 desc: When you lose SPD, gain +1 DEF
 unlocked: true
 type: default
 
 [Legion Greaves]
+stats: null
 desc: When you lose SPD, gain +2 max HP
 unlocked: true
 type: default
 
 [Woodgrain Talisman]
-desc: +2 SPD | At battle start, if you have less SPD than the enemy, gain ATK equal to your SPD
+stats: +2 SPD
+desc: At battle start, if you have less SPD than the enemy, gain ATK equal to your SPD
 unlocked: true
 type: default
 
 [Spell: Wrath of the Gods]
+stats: null
 desc: When exposed, deal 1 damage 3 times
 unlocked: true
 type: default
 
 [Crown of the Ivory King]
+stats: null
 desc: At battle start, gain max HP equal to your DEF
 unlocked: true
 type: default
 
 [Catarina Greaves]
-desc: -1 SPD | While you have DEF, gain +2 ATK
+stats: -1 SPD
+desc: While you have DEF, gain +2 ATK
 unlocked: true
 type: default
 
 [Wolf's Blood]
+stats: null
 desc: When exposed, gain +4 DEF
 unlocked: true
 type: default
 
 [Izalith Gauntlets]
-desc: +1 ATK | At battle start, inflict 2 Burn
+stats: +1 ATK
+desc: At battle start, inflict 2 Burn
 unlocked: true
 type: default
 
 [Spell: Seething Chaos]
+stats: null
 desc: When wounded, inflict 3 Burn
 unlocked: true
 type: default
 
 [Spell: Barrier of Chaos]
-desc: +8 DEF | At battle start, gain 2 Burn
+stats: +8 DEF
+desc: At battle start, gain 2 Burn
 unlocked: true
 type: default
 
 [Putrescent Gauntlets]
+stats: null
 desc: Inflict Poison equal to the damage dealt by the enemy's first strike
 unlocked: true
 type: default
 
 [Corrosive Buckler]
-desc: +2 DEF | At turn start, lose 1 DEF but inflict 2 Poison
+stats: +2 DEF
+desc: At turn start, lose 1 DEF but inflict 2 Poison
 unlocked: true
 type: default
 
 [Dung Pie]
+stats: null
 desc: At battle start, inflict 6 Poison but gain 3 Poison
 unlocked: true
 type: default
 
 [Divine Armour]
+stats: null
 desc: Enemy's first strike deals double damage, but inflict them with 5 Stun
 unlocked: true
 type: default
 
 [Storm King Crown]
+stats: null
 desc: When Stun is inflicted on the enemy or you, gain +2 DEF
 unlocked: true
 type: default
 
 [Relic of the Ancients]
-desc: +2 ATK | At battle start, inflict 4 Stun but gain 2 Stun
+stats: +2 ATK
+desc: At battle start, inflict 4 Stun but gain 2 Stun
 unlocked: true
 type: default
 
 [Stone Greaves]
-desc: +1 DEF | When you gain Stun, deal 2 damage
+stats: +1 DEF
+desc: When you gain Stun, deal 2 damage
 unlocked: true
 type: default

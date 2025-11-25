@@ -3,6 +3,7 @@
 #include <vector>
 #include <tuple>
 #include <memory>
+#include <map>
 #include "Enemy.h"
 #include "Location.h"
 using namespace std;
@@ -46,6 +47,7 @@ private:
     string selectBoss(string area, int day);
     void displayMap(string reset_colour);
     void playerSetup();
+    void setBaseStats(bool resetHP=false);
     void updateMovement(char input);
     void displayWorld();
     void displayInventory(vector<string> inventory);
@@ -59,6 +61,8 @@ private:
 	void startCombat(Enemy& enemy);
 	void startBossCombat(string bossName);
     void checkPlayerLocation();
+    void resetWeapon(string newWeapon);
+    void updatePlayerStats(bool setHP=false);
 	void updateTime();
     void displayInfoAndInventory();
     vector<string> updateInventory();
@@ -66,8 +70,10 @@ public:
     Level(string area, string keepsake, string oldSoul);
 
     int playerHP, playerMaxHP, playerATK, playerDEF, playerSPD, playerSouls;
+    int playerHPBase, playerMaxHPBase, playerATKBase, playerDEFBase, playerSPDBase;
     int endGame;
     string playerWeapon;
+	map<string, string> playerWeaponDetails;
     vector<string> playerInventory;
 
     void display();

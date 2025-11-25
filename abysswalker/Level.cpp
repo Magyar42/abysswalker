@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <functional>
+#include <algorithm>
 using namespace std;
 
 Level::Level(string area, string keepsake, string oldSoul)
@@ -28,13 +29,19 @@ Level::Level(string area, string keepsake, string oldSoul)
 	endGame = 0;
 	playerCoords = make_tuple(1, 1); // todo: add random spawning
 	mapSectorCoords = make_tuple(0, 0);
+	playerHPBase = 10;
+	playerMaxHPBase = 10;
+	playerATKBase = 1;
+	playerDEFBase = 0;
+	playerSPDBase = 0;
 	playerHP = 10;
-	playerMaxHP = 10;
+	playerMaxHP= 10;
 	playerATK = 1;
 	playerDEF = 0;
 	playerSPD = 0;
 	playerSouls = 100;
 	playerWeapon = "None";
+	playerWeaponDetails = {};
 	playerInventory = { "Empty", "Empty", "Empty", "Empty" };
 	playerTilePrev = "";
 
@@ -120,7 +127,7 @@ void Level::assignSectorToMap(tuple<int, int> numSector)
 						// todo: to fix colouring text, dont set location icon here, just save coords and set later
 						displayedSector[rowIndex][tileIndex] = colourText(LOCATION_TILE, YELLOW); // Fallback
 						// todo: randomly choose location type
-						currentSectorLocations.emplace_back(make_unique<Grave>(make_tuple(tileIndex, rowIndex), numSector));
+						currentSectorLocations.emplace_back(make_unique<Ruins>(make_tuple(tileIndex, rowIndex), numSector));
 					}
 					tileIndex++;
 				}
@@ -251,15 +258,26 @@ string Level::selectBoss(string area, int day)
 void Level::playerSetup()
 {
 	if (setOldSoul == "Soul of the Wolf Knight") {
-		playerHP = 10;
-		playerMaxHP = 10;
-		playerATK = 2;
-		playerDEF = 0;
-		playerSPD = 1;
-		playerWeapon = "Wolf Knight Greatsword";
+		playerHPBase = 10;
+		playerMaxHPBase = 10;
+		playerATKBase = 2;
+		playerDEFBase = 0;
+		playerSPDBase = 1;
+		setBaseStats();
+		resetWeapon("Wolf Knight Greatsword");
 	}
 
 	playerInventory.at(0) = setKeepsake;
+	updatePlayerStats(true);
+}
+
+void Level::setBaseStats(bool resetHP)
+{
+	playerMaxHP = playerMaxHPBase;
+	playerATK = playerATKBase;
+	playerDEF = playerDEFBase;
+	playerSPD = playerSPDBase;
+	if (resetHP) { playerHP = playerMaxHP; }
 }
 
 // UPDATES //
@@ -287,6 +305,7 @@ void Level::updateMovement(char input)
 
 	updateTime();
 	checkPlayerLocation();
+	updatePlayerStats();
 }
 
 void Level::updateTime()
@@ -333,6 +352,116 @@ void Level::checkPlayerLocation()
 			break;
 		}
 	}
+}
+
+void Level::resetWeapon(string newWeapon)
+{
+	playerWeaponDetails = {
+		{"Name", "None"},
+		{"HP", "0"},
+		{"ATK", "0"},
+		{"DEF", "0"},
+		{"SPD", "0"},
+		{ "Effect", "None"},
+		{ "Gem", "None"},
+		{ "NumUpgrades", "0"}
+	};
+
+	if (newWeapon != "null") {
+		if (find(allItemsByType[3].begin(), allItemsByType[3].end(), newWeapon) != allItemsByType[3].end()) {
+			playerWeapon = newWeapon;
+			playerWeaponDetails["Name"] = newWeapon;
+			playerWeaponDetails["Effect"] = allItemsMap[newWeapon]["desc"];
+			if (newWeapon == "Pyromancy Flame") { playerWeaponDetails["Gem"] = "Fire Gem"; }
+
+			string statsString = allItemsMap[newWeapon]["stats"];
+			vector<string> itemStats = {};
+			bool severalStats = false;
+
+			while (statsString.find("|") != string::npos) {
+				severalStats = true;
+				string stat = statsString.substr(0, statsString.find("|") - 1);
+				statsString.erase(0, statsString.find("|") + 2);
+
+				itemStats.push_back(stat);
+			}
+			if (!severalStats) {
+				itemStats.push_back(statsString);
+			}
+			else {
+				string lastStat = statsString.substr(statsString.find_last_of("|") + 1);
+				itemStats.push_back(lastStat);
+			}
+
+			for (string stat : itemStats) {
+				string statChange = stat.substr(0, stat.find(" "));
+				string statName = stat.substr(stat.find(" ") + 1);
+
+				playerWeaponDetails[statName] = statChange;
+			}
+		}
+	}
+	else {
+		playerWeapon = "None";
+	}
+}
+
+// todo: call when inventory changes OR weapon gains upgrades
+void Level::updatePlayerStats(bool setHP)
+{
+	setBaseStats();
+	for (string item : playerInventory) {
+		if (item != "Empty" && allItemsMap[item]["stats"] != "null") {
+			string statsString = allItemsMap[item]["stats"];
+			vector<string> itemStats = {};
+			bool severalStats = false;
+
+			while (statsString.find("|") != string::npos) {
+				severalStats = true;
+				string stat = statsString.substr(0, statsString.find("|") - 1);
+				statsString.erase(0, statsString.find("|") + 2);
+
+				itemStats.push_back(stat);
+			}
+			if (!severalStats) {
+				itemStats.push_back(statsString);
+			}
+			else {
+				string lastStat = statsString.substr(statsString.find_last_of("|") + 1);
+				itemStats.push_back(lastStat);
+			}
+
+			for (string stat : itemStats) {
+				string statChange = stat.substr(0, stat.find(" "));
+				string statName = stat.substr(stat.find(" ") + 1);
+				
+				if (statName == "HP") {
+					playerMaxHP += stoi(statChange);
+				}
+				else if (statName == "ATK") {
+					playerATK += stoi(statChange);
+				}
+				else if (statName == "DEF") {
+					playerDEF += stoi(statChange);
+				}
+				else if (statName == "SPD") {
+					playerSPD += stoi(statChange);
+				}
+			}
+		}
+	}
+
+	playerMaxHP += stoi(playerWeaponDetails["HP"]);
+	playerATK += stoi(playerWeaponDetails["ATK"]);
+	playerDEF += stoi(playerWeaponDetails["DEF"]);
+	playerSPD += stoi(playerWeaponDetails["SPD"]);
+
+	if (setHP) { playerHP = playerMaxHP; }
+	if (playerMaxHP < 0) { playerMaxHP = 0; }
+	if (playerHP < 0) { playerHP = 0; }
+	if (playerATK < 0) { playerATK = 0; }
+	if (playerDEF < 0) { playerDEF = 0; }
+	if (playerSPD < 0) { playerSPD = 0; }
 }
 
 vector<string> Level::updateInventory()
@@ -501,11 +630,16 @@ void Level::startBossCombat(string bossName)
 	else {
 		playerHP = battleInstance.playerHP;
 		playerSouls += 500;
-		currentBoss = selectBoss(setArea, currentAreaDay);
+		if (bossEnemy.enemyName == "Hydra of the Basin") {
+			endGame = 2;
+		}
+		else {
+			currentBoss = selectBoss(setArea, currentAreaDay);
 
-		// Each defeated boss unlocks 2 new inventory slots
-		playerInventory.push_back("Empty");
-		playerInventory.push_back("Empty");
+			// Each defeated boss unlocks 2 new inventory slots
+			playerInventory.push_back("Empty");
+			playerInventory.push_back("Empty");
+		}
 	}
 }
 
@@ -543,16 +677,54 @@ void Level::display()
 				else if (returnValue != "null") {
 					locationActive = false;
 
-					// todo: below works but check the type of location first, as not all will give items
-					for (string & invItem : playerInventory) {
-						if (invItem == "Empty") {
-							invItem = returnValue;
-							break;
+					if (currentLocation->locationType == "Warrior's Grave") {
+						resetWeapon(returnValue);
+						updatePlayerStats();
+					}
+					else if (currentLocation->locationType == "Crystal Lizard" || currentLocation->locationType == "Ruins") {
+						bool itemAdded = false;
+						for (string& invItem : playerInventory) {
+							if (invItem == "Empty") {
+								invItem = returnValue;
+								itemAdded = true;
+								break;
+							}
 						}
+
+						if (!itemAdded) {
+							vector<string> discardList = {};
+							for (int i = 0; i < playerInvDisplay.size(); i++) {
+								if (i == 0) { continue; }
+								else { discardList.push_back(playerInvDisplay[i]); }
+							}
+							discardList.push_back(returnValue);
+							List playerDiscardList("Discard", discardList);
+
+							while (true) {
+								clearScreen();
+								displayTitle();
+								cout << " Inventory full! Could not add " << colourText(returnValue, YELLOW) << ". Please choose any item to discard.\n\n";
+
+								string invItemToRemove = playerDiscardList.displayItems();
+								if (invItemToRemove == returnValue) {
+									break;
+								}
+								else {
+									for (string& invItem : playerInventory) {
+										if (invItem == invItemToRemove) {
+											invItem = returnValue;
+											itemAdded = true;
+											break;
+										}
+									}
+									if (itemAdded) { break; }
+								}
+							}
+						}
+						updatePlayerStats();
 					}
 
 					// todo: when duplicate items exist, make sure to add #1, #2, etc
-					// todo: if inventory full, prompt to replace an item
 					playerInvDisplay = updateInventory();
 					playerInv = List("Inventory", playerInvDisplay);
 				}
